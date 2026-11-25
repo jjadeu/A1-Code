@@ -53,6 +53,8 @@
   --paper-size: 1.111cqw;  /* = 16px on the 1440px Figma frame */
 
   --ease-physical: cubic-bezier(.45, .05, .25, 1);
+
+  --glow-strength: 1.9;    /* scene light: 1 = soft, 2 = strong */
 }
 
 
@@ -143,7 +145,10 @@ p { margin: 0; }
   height: 100%;
   /* includes scene 3's light (same as .glow nr 3) so there is no seam */
   background:
-    radial-gradient(50vw 42vh at 50% 40%, rgb(196 208 178 / .24) 0%, rgb(196 208 178 / .108) 40%, transparent 72%) fixed,
+    radial-gradient(50vw 42vh at 50% 40%,
+      rgb(196 208 178 / calc(.24 * var(--glow-strength))) 0%,
+      rgb(196 208 178 / calc(.24 * var(--glow-strength) * .5)) 40%,
+      transparent 75%) fixed,
     var(--olive-dark) url("assets/background.jpg") center / cover no-repeat fixed;
 }
 
@@ -189,10 +194,11 @@ body { timeline-scope: --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g9; }
   position: absolute;
   inset: 0;
   opacity: 0;
+  /* --glow-strength (in :root) turns every scene's light up or down */
   background: radial-gradient(var(--gs) at var(--gx) var(--gy),
-              rgb(196 208 178 / var(--ga)) 0%,
-              rgb(196 208 178 / calc(var(--ga) * .45)) 40%,
-              transparent 72%);
+              rgb(196 208 178 / calc(var(--ga) * var(--glow-strength))) 0%,
+              rgb(196 208 178 / calc(var(--ga) * var(--glow-strength) * .5)) 40%,
+              transparent 75%);
   animation: glow linear both;
   animation-range: cover 0% cover 100%;
 }
