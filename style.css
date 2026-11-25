@@ -324,14 +324,14 @@ body { timeline-scope: --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g9; }
 .machine { z-index: 3; }
 .typewriter { z-index: 2; pointer-events: none; transition: filter .8s ease; }
 
-/* The paper sits behind the typewriter: it shows under the bar and
-   through the faded bottom of the machine (as in Figma), and is only
-   cut off at the bottom edge of the typewriter. */
+/* The paper sits behind the typewriter: it shows under the bar and is
+   cut off at the top row of keys (40% from the bottom of the box).
+   Change the 40% to move the cut. */
 .sheet-clip {
   position: absolute;
   inset: 0;
   z-index: 1;
-  clip-path: inset(-80% 0 16% 0);
+  clip-path: inset(-80% 0 40% 0);
 }
 .sheet {
   position: absolute;
