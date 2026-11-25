@@ -286,6 +286,16 @@ body { timeline-scope: --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g9; }
   animation-name: type-clip;
 }
 
+/* Medals: the text is centred horizontally in the empty space to the
+   right of the medals (and each line is centred). */
+.scene--medals .verse {
+  left: var(--artw);
+  right: 0;
+  max-width: none;
+  text-align: center;
+}
+.scene--medals .verse .type-line { margin-inline: auto; }
+
 
 /* ---------- 03  PINNED SCENES + SCROLL TYPING ----------
    A .pinned section is taller than the screen. Its .stage sticks to the
