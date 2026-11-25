@@ -9,6 +9,24 @@
 </head>
 <body>
 
+<!-- ATMOSPHERE: one soft light patch per scene (behind the content) and
+     dark film edges (on top). Each patch fades in with its scene and out
+     as the next scene arrives, so the light merges from scene to scene.
+     --gx / --gy = centre of the light (% of the window)
+     --gs = size of the light, --ga = strength (0–1)                      -->
+<div class="atmosphere" aria-hidden="true">
+  <div class="glow" style="--gx:50%; --gy:46%; --gs:42vw 46vh; --ga:.30"></div> <!-- 1 typewriter -->
+  <div class="glow" style="--gx:64%; --gy:48%; --gs:38vw 44vh; --ga:.26"></div> <!-- 2 flowers -->
+  <div class="glow" style="--gx:50%; --gy:40%; --gs:50vw 42vh; --ga:.24"></div> <!-- 3 aerodrome -->
+  <div class="glow" style="--gx:26%; --gy:52%; --gs:36vw 46vh; --ga:.28"></div> <!-- 4 coffin (left) -->
+  <div class="glow" style="--gx:52%; --gy:50%; --gs:46vw 48vh; --ga:.24"></div> <!-- 5 belongings -->
+  <div class="glow" style="--gx:66%; --gy:48%; --gs:36vw 46vh; --ga:.26"></div> <!-- 6 guitar -->
+  <div class="glow" style="--gx:50%; --gy:44%; --gs:28vw 50vh; --ga:.26"></div> <!-- 7 lectern -->
+  <div class="glow" style="--gx:24%; --gy:40%; --gs:36vw 48vh; --ga:.26"></div> <!-- 8 medals (left) -->
+  <div class="glow" style="--gx:50%; --gy:50%; --gs:30vw 26vh; --ga:.14"></div> <!-- 9 ending -->
+</div>
+<div class="vignette" aria-hidden="true"></div>
+
 <main class="archive">
 
   <!-- ===================== SCENE 01 — TYPEWRITER =====================

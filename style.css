@@ -141,7 +141,10 @@ p { margin: 0; }
   inset: 0;
   width: 100%;
   height: 100%;
-  background: var(--olive-dark) url("assets/background.jpg") center / cover no-repeat fixed;
+  /* includes scene 3's light (same as .glow nr 3) so there is no seam */
+  background:
+    radial-gradient(50vw 42vh at 50% 40%, rgb(196 208 178 / .24) 0%, rgb(196 208 178 / .108) 40%, transparent 72%) fixed,
+    var(--olive-dark) url("assets/background.jpg") center / cover no-repeat fixed;
 }
 
 /* A text box, placed like the Figma text box (--tx, --ty). */
@@ -152,6 +155,71 @@ p { margin: 0; }
   z-index: 5;
   font-size: max(var(--text-size), 10px);
   line-height: 1.3;
+}
+
+
+/* ---------- ATMOSPHERE: SCENE LIGHT + FILM EDGES ----------
+   .glow     — one soft patch of light per scene, behind the content.
+               Each one is tied to its own scene's scroll (--g1 … --g9):
+               it fades in while its scene comes in and fades out while
+               it leaves. The next scene's light fades in at the same
+               time, so the light merges from one scene into the next.
+   .vignette — dark, uneven film edges on top of everything.           */
+body { timeline-scope: --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g9; }
+
+.archive > section:nth-of-type(1) { view-timeline-name: --g1; }
+.archive > section:nth-of-type(2) { view-timeline-name: --scene, --g2; }
+.archive > section:nth-of-type(3) { view-timeline-name: --scene, --g3; }
+.archive > section:nth-of-type(4) { view-timeline-name: --scene, --g4; }
+.archive > section:nth-of-type(5) { view-timeline-name: --g5; }
+.archive > section:nth-of-type(6) { view-timeline-name: --scene, --g6; }
+.archive > section:nth-of-type(7) { view-timeline-name: --scene, --g7; }
+.archive > section:nth-of-type(8) { view-timeline-name: --scene, --g8; }
+.archive > section:nth-of-type(9) { view-timeline-name: --g9; }
+
+.archive { position: relative; z-index: 1; }   /* content above the light */
+
+.atmosphere {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.glow {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background: radial-gradient(var(--gs) at var(--gx) var(--gy),
+              rgb(196 208 178 / var(--ga)) 0%,
+              rgb(196 208 178 / calc(var(--ga) * .45)) 40%,
+              transparent 72%);
+  animation: glow linear both;
+  animation-range: cover 0% cover 100%;
+}
+@keyframes glow {
+  entry 0%   { opacity: 0; }
+  entry 100% { opacity: 1; }
+  exit 0%    { opacity: 1; }
+  exit 100%  { opacity: 0; }
+}
+.glow:nth-child(1) { animation-timeline: --g1; }
+.glow:nth-child(2) { animation-timeline: --g2; }
+.glow:nth-child(3) { animation-timeline: --g3; }
+.glow:nth-child(4) { animation-timeline: --g4; }
+.glow:nth-child(5) { animation-timeline: --g5; }
+.glow:nth-child(6) { animation-timeline: --g6; }
+.glow:nth-child(7) { animation-timeline: --g7; }
+.glow:nth-child(8) { animation-timeline: --g8; }
+.glow:nth-child(9) { animation-timeline: --g9; }
+
+.vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 95% at 50% 46%, transparent 52%, rgb(12 14 10 / .55) 100%),
+    linear-gradient(to bottom, rgb(12 14 10 / .35), transparent 18%, transparent 82%, rgb(12 14 10 / .45));
 }
 
 
@@ -578,6 +646,8 @@ p { margin: 0; }
   .verse .type-line { animation: none; width: auto; }
   .contaminate { animation: none; opacity: 0; }
   .verse--center .type-line { animation: none; }
+  .glow { animation: none; }
+  .glow:nth-child(1) { opacity: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {
