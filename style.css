@@ -24,7 +24,8 @@
   --olive-black: #23251f;
   --ink-white:  #cbdec4;   /* text colour from Figma */
   --ink-paper:  #3a241f;   /* typewriter ink on the paper (Figma) */
-  --blood:      #9f1d12;
+  --blood:      #e3261a;   /* bright red of the last line */
+  --blood-deep: #9f1d12;   /* darker red it bleeds into on hover */
 
   --font: "Courier Prime", "Courier New", monospace;
   --text-size: 1.667cqw;   /* = 24px on the 1440px Figma frame */
@@ -450,14 +451,14 @@ p { margin: 0; }
   width: auto;
   animation: none;
 }
-.red { color: var(--blood); }
+.title { color: var(--blood); }   /* the whole last line is red */
 .title .bleed {
   transition:
     color 3.2s var(--ease-physical),
     filter 3.2s var(--ease-physical);
 }
 .title .bleed:hover {
-  color: var(--blood);
+  color: var(--blood-deep);
   filter: blur(1.8px);
   transition-duration: 3.6s;
 }
