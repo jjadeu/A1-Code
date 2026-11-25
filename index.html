@@ -3,58 +3,202 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>A1 Code</title>
-  <meta name="description" content="A1 Code — projects and experiments.">
+  <title>Army Dreamers</title>
+  <meta name="description" content="An interactive poetry archive. HTML and CSS only.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="site-header">
-    <a class="brand" href="#">A1&nbsp;Code</a>
-    <nav>
-      <a href="#about">About</a>
-      <a href="#projects">Projects</a>
-      <a href="#contact">Contact</a>
-    </nav>
-  </header>
 
-  <main>
-    <section class="hero">
-      <h1>Hello, I'm building things with code.</h1>
-      <p>This site is hosted on GitHub Pages from the <code>A1-Code</code> repository. Edit <code>index.html</code>, commit, and push — the site updates automatically.</p>
-      <a class="button" href="https://github.com/jjadeu/A1-Code">View on GitHub</a>
-    </section>
+<!--
+  =====================================================================
+  HOW TO EDIT THE POEM
+  Every line of the poem lives in a <span class="ink">…</span>.
+  Replace the text in [ square brackets ] with your own lines.
 
-    <section id="about">
-      <h2>About</h2>
-      <p>Write a short introduction about yourself or this project here.</p>
-    </section>
+  Typewriter lines (scene 01) also have style="--chars: NN".
+  Set NN to the number of characters in that line (spaces included),
+  so the typing stops exactly at the last letter.
+  =====================================================================
+-->
 
-    <section id="projects">
-      <h2>Projects</h2>
-      <div class="cards">
-        <article class="card">
-          <h3>Project one</h3>
-          <p>A short description of what it does and what you learned.</p>
-        </article>
-        <article class="card">
-          <h3>Project two</h3>
-          <p>A short description of what it does and what you learned.</p>
-        </article>
-        <article class="card">
-          <h3>Project three</h3>
-          <p>A short description of what it does and what you learned.</p>
-        </article>
+<main class="archive">
+
+  <!-- ===================== SCENE 01 — TYPEWRITER ===================== -->
+  <!-- Three hidden radio buttons remember which sheet is in the machine.
+       Clicking the typewriter (a <label>) switches to the next sheet.   -->
+  <section class="scene scene--typewriter" aria-label="Scene one">
+    <input class="sheet-state" type="radio" name="sheet" id="sheet-0" checked>
+    <input class="sheet-state" type="radio" name="sheet" id="sheet-b">
+    <input class="sheet-state" type="radio" name="sheet" id="sheet-a">
+
+    <div class="art" style="--ratio: 1440 / 1240">
+      <img class="layer" src="assets/typewriter-splash.png" alt="" style="--x:0%; --y:0%; --w:100.6%; --ar:1449/1227">
+
+      <!-- The paper sits behind the typewriter and is clipped at the roller -->
+      <div class="layer machine" style="--x:6.74%; --y:4.2%; --w:86.53%; --ar:1246/1055">
+        <div class="sheet-clip">
+          <div class="sheet sheet--a">
+            <img src="assets/paper.png" alt="">
+            <p class="typed">
+              <span class="type-line" style="--chars: 21"><span class="ink">[ paste line 1 here ]</span></span>
+              <span class="type-line" style="--chars: 21"><span class="ink">[ paste line 2 here ]</span></span>
+            </p>
+          </div>
+          <div class="sheet sheet--b">
+            <img src="assets/paper.png" alt="">
+            <p class="typed">
+              <span class="type-line" style="--chars: 21"><span class="ink">[ paste line 1 here ]</span></span>
+              <span class="type-line" style="--chars: 21"><span class="ink">[ paste line 2 here ]</span></span>
+            </p>
+          </div>
+        </div>
+        <img class="typewriter" src="assets/typewriter.png" alt="An old typewriter">
+        <label class="typewriter-hit to-b" for="sheet-b" title="Feed a new sheet"><span class="sr-only">Feed a new sheet</span></label>
+        <label class="typewriter-hit to-a" for="sheet-a" title="Feed a new sheet"><span class="sr-only">Feed a new sheet</span></label>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <section id="contact">
-      <h2>Contact</h2>
-      <p>Find me on <a href="https://github.com/jjadeu">GitHub</a>.</p>
-    </section>
-  </main>
 
-  <footer>
-    <p>&copy; 2026 A1 Code</p>
-  </footer>
+  <!-- ===================== SCENE 02 — FLOWERS ===================== -->
+  <section class="scene scene--flowers" aria-label="Scene two">
+    <div class="art" style="--ratio: 1440 / 1219">
+      <img class="layer" src="assets/flower-splash.png" alt="" style="--x:0%; --y:0%; --w:100%">
+      <img class="layer flowers" src="assets/flowers.png" alt="A bunch of flowers" style="--x:37.7%; --y:8.9%; --w:74%; --ar:1065.5/942.5">
+    </div>
+    <div class="verse" style="--tx:9%; --ty:38%">
+      <p class="line reveal-ink"><span class="ink">[ scene 02 · line 1 ]</span></p>
+      <p class="line reveal-ink late"><span class="ink">[ scene 02 · line 2 ]</span></p>
+    </div>
+  </section>
+
+
+  <!-- ===================== SCENE 03 — AERODROME ===================== -->
+  <section class="scene scene--aerodrome" aria-label="Scene three">
+    <div class="art" style="--ratio: 1440 / 1245">
+      <img class="layer" src="assets/aerodrome.jpg" alt="An empty aerodrome under a heavy sky" style="--x:0%; --y:0%; --w:100%">
+      <img class="layer" src="assets/aerodrome-splash.png" alt="" style="--x:0%; --y:2%; --w:100%">
+    </div>
+    <div class="verse" style="--tx:12%; --ty:74%">
+      <p class="line reveal-drift"><span class="ink">[ scene 03 · line 1 ]</span></p>
+      <p class="line reveal-drift late"><span class="ink">[ scene 03 · line 2 ]</span></p>
+    </div>
+  </section>
+
+
+  <!-- ===================== SCENE 04 — FOUR MEN ===================== -->
+  <!-- Add your photo as assets/coffin.jpg — it appears automatically. -->
+  <section class="scene scene--coffin" aria-label="Scene four">
+    <div class="art" style="--ratio: 1440 / 1220">
+      <img class="layer" src="assets/coffin-splash.png" alt="" style="--x:0%; --y:0%; --w:100.07%">
+      <img class="layer" src="assets/coffin.png" alt="Four men in uniform carrying a coffin" style="--x:0%; --y:0.1%; --w:100.07%">
+    </div>
+    <div class="verse" style="--tx:70%; --ty:50%">
+      <p class="line reveal-wipe"><span class="ink">[ scene 04 · line 1 ]</span></p>
+      <p class="line reveal-wipe late"><span class="ink">[ scene 04 · line 2 ]</span></p>
+    </div>
+  </section>
+
+
+  <!-- ===================== SCENE 05 — BELONGINGS ===================== -->
+  <section class="scene scene--belongings" aria-label="Scene five: belongings">
+    <input class="tin-state" type="checkbox" id="tin-open">
+    <div class="art" style="--ratio: 1440 / 1290">
+      <img class="layer" src="assets/photo-splash.png" alt="" style="--x:0%; --y:5%; --w:100%">
+
+      <!-- The tin: body, contents, lid. Lid and body are separate images. -->
+      <div class="layer tin" style="--x:32.8%; --y:0%; --w:93.9%; --ar:1352.7/1207; --rot:9deg">
+        <img class="tin__body" src="assets/tin-body.png" alt="An open tin box">
+
+        <!-- ADD OBJECTS HERE. Each object is one <img class="keepsake">.
+             Use --x / --y (position inside the tin) and --r (rotation).
+             Example:
+             <img class="keepsake" src="assets/dog-tag.png" alt="Dog tag"
+                  style="--x:20%; --y:30%; --w:35%; --r:-8deg">            -->
+        <div class="tin__contents">
+        </div>
+
+        <img class="tin__lid" src="assets/tin-lid.png" alt="">
+        <label class="tin__hit" for="tin-open" title="Open the tin"><span class="sr-only">Open or close the tin</span></label>
+      </div>
+
+      <img class="layer photo" tabindex="0" src="assets/photo.png" alt="A faded portrait of a young soldier" style="--x:0%; --y:32.6%; --w:60.9%; --ar:877.6/769.75; --rot:-7deg">
+    </div>
+  </section>
+
+
+  <!-- ===================== SCENE 06 — GUITAR / GUN ===================== -->
+  <!-- The gun sits under the guitar. Hovering the guitar (.morph__hit)
+       tears the guitar away and lets the gun show through.            -->
+  <section class="scene scene--guitar" aria-label="Scene six">
+    <div class="art morph" style="--ratio: 1440 / 1220">
+      <img class="layer" src="assets/guitar-splash.png" alt="" style="--x:0%; --y:0.1%; --w:100%">
+      <img class="layer morph__gun" src="assets/gun.png" alt="" style="--x:0%; --y:0.1%; --w:100%">
+      <img class="layer morph__guitar" src="assets/guitar.png" alt="A guitar" style="--x:0%; --y:0%; --w:100%">
+      <span class="morph__hit" tabindex="0" role="img" aria-label="A guitar that turns into a gun"></span>
+    </div>
+    <div class="verse" style="--tx:10%; --ty:30%">
+      <p class="line whisper reveal-ink"><span class="ink">[ scene 06 · line 1 ]</span></p>
+      <p class="line whisper reveal-ink late"><span class="ink">[ scene 06 · line 2 ]</span></p>
+      <p class="line reveal-wipe later gap"><span class="ink">[ scene 06 · line 3 ]</span></p>
+    </div>
+  </section>
+
+
+  <!-- ===================== SCENE 07 — LECTERN (split) ===================== -->
+  <section class="scene scene--lectern" aria-label="Scene seven">
+    <div class="art" style="--ratio: 1440 / 1220">
+      <img class="layer" src="assets/lectern-splash.png" alt="" style="--x:0%; --y:0%; --w:100%">
+      <img class="layer" src="assets/lectern.png" alt="An empty lectern" style="--x:0%; --y:0%; --w:100%">
+    </div>
+    <div class="verse verse--left" style="--tx:7%; --ty:24%">
+      <p class="line whisper reveal-drift"><span class="ink">[ scene 07 · line 1 ]</span></p>
+      <p class="line whisper reveal-drift late"><span class="ink">[ scene 07 · line 2 ]</span></p>
+    </div>
+    <div class="verse verse--right" style="--tx:64%; --ty:70%">
+      <p class="line reveal-wipe"><span class="ink">[ scene 07 · line 3 ]</span></p>
+    </div>
+  </section>
+
+
+  <!-- ===================== SCENE 08 — MEDALS ===================== -->
+  <!-- The medals stay pinned while the lines pass.
+       The line with class "trigger" starts the contamination.       -->
+  <section class="scene scene--medals" aria-label="Scene eight">
+    <div class="medals-pin">
+      <div class="art" style="--ratio: 1440 / 1606">
+        <img class="layer" src="assets/medals-clean.png" alt="Military medals" style="--x:0%; --y:0%; --w:100%">
+        <img class="layer contaminate splash" src="assets/medal-splash.png" alt="" style="--x:0%; --y:0%; --w:100%">
+        <img class="layer contaminate dirty" src="assets/medals-dirty.png" alt="" style="--x:0%; --y:0%; --w:100%">
+      </div>
+    </div>
+    <div class="verse verse--scroll">
+      <p class="line whisper reveal-ink"><span class="ink">[ scene 08 · line 1 ]</span></p>
+      <p class="line whisper reveal-ink"><span class="ink">[ scene 08 · line 2 ]</span></p>
+      <p class="line trigger reveal-wipe"><span class="ink">[ scene 08 · line 3 ]</span></p>
+    </div>
+  </section>
+
+
+  <!-- ===================== SCENE 09 — PAUSE ===================== -->
+  <section class="scene scene--pause" aria-label="Scene nine">
+    <p class="line reveal-slow"><span class="ink">[ scene 09 ]</span></p>
+  </section>
+
+
+  <!-- ===================== SCENE 10 — ENDING ===================== -->
+  <section class="scene scene--end" aria-label="Scene ten">
+    <img class="end-splash" src="assets/typewriter-splash.png" alt="">
+    <h1 class="title reveal-slow"><span class="bleed">[ final line ]</span></h1>
+  </section>
+
+</main>
+
+<!-- Sound (assignment requirement). Put an mp3 at assets/sound.mp3. -->
+<audio class="sound" controls loop preload="none" src="assets/sound.mp3" aria-label="Sound"></audio>
+
 </body>
 </html>

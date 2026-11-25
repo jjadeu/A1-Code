@@ -1,55 +1,602 @@
+/* =====================================================================
+   ARMY DREAMERS — interactive poetry archive
+   HTML + CSS only. Built and tested for Google Chrome.
+
+   Contents
+   00  Variables (colours, type, timing)
+   01  Base page
+   02  Shared building blocks (.scene, .art, .layer, .verse, .line)
+   03  Ink bleed on hover
+   04  Scroll reveals
+   05  Scene 01 — typewriter
+   06  Scene 02 — flowers
+   07  Scene 04 — archive photograph
+   08  Scene 05 — photograph + tin box
+   09  Scene 06 — guitar / gun
+   10  Scene 07 — lectern split
+   11  Scene 08 — medals
+   12  Scene 09 + 10 — ending
+   13  Sound
+   14  Fallback for browsers without scroll-driven animation
+   15  Smaller screens
+   ===================================================================== */
+
+
+/* ---------- 00  VARIABLES ---------- */
 :root {
-  --bg: #fafaf9;
-  --surface: #ffffff;
-  --text: #1c1917;
-  --muted: #57534e;
-  --border: #e7e5e4;
-  --accent: #2563eb;
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0c0a09;
-    --surface: #1c1917;
-    --text: #f5f5f4;
-    --muted: #a8a29e;
-    --border: #292524;
-    --accent: #60a5fa;
-  }
+  /* palette */
+  --olive-black: #23251f;
+  --olive-dark:  #2c2f28;
+  --olive:       #4a4f3c;
+  --ash:         #b9bfb0;
+  --ink-white:   #ecebe4;
+  --ink-paper:   #262821;   /* typewriter ink on paper */
+  --rust:        #c2410c;
+  --blood:       #9f1d12;
+
+  /* type */
+  --font: "Courier Prime", "Courier New", monospace;
+  --text-size: clamp(11px, 0.92vw, 14px);
+  --tracking: 0.06em;
+
+  /* timing */
+  --slow: 1.6s;
+  --ease-physical: cubic-bezier(.45, .05, .25, 1);
+  --char-time: 95ms;          /* typewriter: time per letter */
+  --type-start: 1.4s;         /* pause before the first letter */
 }
 
-* { box-sizing: border-box; }
+
+/* ---------- 01  BASE ---------- */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { background: var(--olive-black); }
+
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  line-height: 1.6;
-  background: var(--bg);
-  color: var(--text);
-}
-a { color: var(--accent); }
-code { background: var(--border); padding: 0.1em 0.35em; border-radius: 4px; font-size: 0.9em; }
-
-.site-header {
-  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;
-  max-width: 960px; margin: 0 auto; padding: 1.25rem 16px;
-}
-.brand { font-weight: 700; font-size: 1.2rem; color: var(--text); text-decoration: none; }
-nav a { margin-left: 1rem; color: var(--muted); text-decoration: none; }
-nav a:hover { color: var(--text); }
-
-main { max-width: 960px; margin: 0 auto; padding: 0 16px; }
-section { padding: 2.5rem 0; border-top: 1px solid var(--border); }
-.hero { border-top: none; padding: 4rem 0 3rem; }
-.hero h1 { font-size: clamp(2rem, 5vw, 3rem); line-height: 1.15; margin: 0 0 1rem; }
-.hero p { color: var(--muted); max-width: 60ch; }
-
-.button {
-  display: inline-block; margin-top: 1rem; padding: 0.6rem 1.1rem;
-  background: var(--accent); color: #fff; border-radius: 8px; text-decoration: none; font-weight: 600;
+  color: var(--ink-white);
+  font-family: var(--font);
+  font-size: var(--text-size);
+  letter-spacing: var(--tracking);
+  line-height: 1.9;
+  background-color: var(--olive-dark);
+  background-image: url("assets/background.jpg");
+  background-size: 100% auto;
+  background-repeat: repeat-y;
+  overflow-x: clip;
 }
 
-.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
-.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; }
-.card h3 { margin-top: 0; }
-.card p { color: var(--muted); margin-bottom: 0; }
+img { display: block; max-width: none; user-select: none; -webkit-user-drag: none; }
+p, h1 { margin: 0; font-weight: 400; }
 
-footer { max-width: 960px; margin: 0 auto; padding: 2rem 16px; color: var(--muted); font-size: 0.9rem; }
+.sr-only {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip-path: inset(50%); white-space: nowrap;
+}
+
+
+/* ---------- 02  SHARED BUILDING BLOCKS ---------- */
+
+/* Every scene is a positioned box. Scenes overlap slightly so the
+   splashes bleed from one scene into the next. */
+.scene {
+  position: relative;
+  margin-top: -6vw;
+}
+.scene:first-child { margin-top: 0; }
+
+/* .art keeps the proportions of the Figma frame (set with --ratio). */
+.art {
+  position: relative;
+  width: 100%;
+  aspect-ratio: var(--ratio, 1440 / 1220);
+  container-type: inline-size;
+}
+
+/* Each picture is placed with three numbers taken from Figma:
+   --x (left), --y (top), --w (width), all in % of the scene. */
+.layer {
+  position: absolute;
+  left: var(--x, 0%);
+  top: var(--y, 0%);
+  width: var(--w, 100%);
+  height: auto;
+  aspect-ratio: var(--ar, auto);   /* Figma box size, when it crops the image */
+  object-fit: cover;
+  rotate: var(--rot, 0deg);        /* Figma rotation */
+}
+/* pictures inside a layer box fill it the way Figma does (cover) */
+.machine > img,
+.machine .sheet img,
+.tin > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* A block of poem text, placed with --tx / --ty. */
+.verse {
+  position: absolute;
+  left: var(--tx, 10%);
+  top: var(--ty, 40%);
+  z-index: 5;
+  max-width: 34ch;
+}
+
+.line { display: block; }
+.line + .line { margin-top: 0.15em; }
+.line.gap { margin-top: 1.4em; }
+
+/* bracketed lines are quieter */
+.whisper { opacity: 0.62; font-style: italic; }
+
+.splash-dim { opacity: 0.55; filter: saturate(.8); }
+
+
+/* ---------- 03  INK BLEED ON HOVER ----------
+   The tear-on-ink effect: the letters soften, spread into a pale halo
+   and drift apart a little, then dry again when the mouse leaves.   */
+.ink {
+  display: inline-block;
+  transition:
+    filter 1.4s var(--ease-physical),
+    text-shadow 1.4s var(--ease-physical),
+    letter-spacing 2s var(--ease-physical),
+    transform 2s var(--ease-physical);
+}
+.ink:hover {
+  filter: blur(0.7px);
+  letter-spacing: 0.11em;
+  transform: scaleY(1.06) translateY(0.04em);
+  text-shadow:
+    0 0.05em 0.12em rgb(236 235 228 / .55),
+    0 0.25em 0.5em  rgb(236 235 228 / .22),
+    0.12em 0.6em 0.9em rgb(150 158 140 / .25);
+  transition-duration: 2.2s, 2.2s, 3s, 3s;
+}
+
+
+/* ---------- 04  SCROLL REVEALS ----------
+   Each line has its own scroll timeline (view()): it animates while the
+   line travels into the screen. Different scenes use different reveals
+   so the pacing does not feel mechanical.                              */
+@keyframes reveal-ink {             /* ink soaking up into the paper */
+  from { opacity: 0; filter: blur(7px); }
+  60%  { opacity: .7; }
+  to   { opacity: 1; filter: blur(0); }
+}
+@keyframes reveal-drift {           /* a memory surfacing */
+  from { opacity: 0; transform: translateY(0.9em); letter-spacing: 0.24em; }
+  to   { opacity: 1; transform: none; letter-spacing: var(--tracking); }
+}
+@keyframes reveal-wipe {            /* a line being typed / uncovered */
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0 0 0); }
+}
+@keyframes reveal-slow {
+  from { opacity: 0; filter: blur(4px); }
+  to   { opacity: 1; filter: blur(0); }
+}
+
+.reveal-ink, .reveal-drift, .reveal-wipe, .reveal-slow {
+  animation-fill-mode: both;
+  animation-timing-function: linear;
+  animation-timeline: view();
+  animation-range: entry 70% cover 42%;
+}
+.reveal-wipe  { animation-timing-function: steps(18, end); }
+.reveal-ink   { animation-name: reveal-ink; }
+.reveal-drift { animation-name: reveal-drift; }
+.reveal-wipe  { animation-name: reveal-wipe; }
+.reveal-slow  { animation-name: reveal-slow; animation-range: cover 18% cover 52%; }
+
+/* later lines in a passage wait a little longer */
+.late  { animation-range: entry 100% cover 50%; }
+.later { animation-range: cover 30% cover 58%; }
+
+
+/* ---------- 05  SCENE 01 — TYPEWRITER ---------- */
+.scene--typewriter { z-index: 2; }
+
+/* hidden inputs that remember clicks. position: fixed stops the page
+   from jumping to them when their label is clicked. */
+.sheet-state, .tin-state {
+  position: fixed; top: 50%; left: 0;
+  width: 1px; height: 1px;
+  opacity: 0; pointer-events: none;
+}
+
+.machine { z-index: 3; }
+.typewriter { z-index: 2; pointer-events: none; }
+
+/* The paper is only visible above the roller (inset bottom = 54%). */
+.sheet-clip {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  clip-path: inset(-80% 0 54% 0);
+}
+.sheet {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+
+.typed {
+  position: absolute;
+  left: 35%;
+  top: 19%;
+  color: var(--ink-paper);
+  font-size: max(0.95cqw, 7px);
+  letter-spacing: 0;
+  line-height: 1.75;
+}
+.typed .ink:hover {
+  text-shadow:
+    0 0.05em 0.12em rgb(38 40 33 / .55),
+    0 0.3em 0.5em  rgb(38 40 33 / .25);
+}
+.type-line {
+  display: block;
+  width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.type-line .ink { transition: none; }
+.type-line .ink:hover { letter-spacing: 0; transform: none; filter: blur(0.6px); }
+
+/* typing: one step = one letter (monospace font, 1ch each) */
+@keyframes type { to { width: calc(var(--chars) * 1ch + 0.1ch); } }
+
+/* paper feed: rises a little after every line */
+/* (typing happens at the roller; when the passage is finished the
+   sheet is wound up so it can be read) */
+@keyframes feed {
+  0%   { opacity: 0; transform: translateY(24%); }
+  5%   { opacity: 1; transform: translateY(24%); }
+  50%  { transform: translateY(24%); }
+  53%  { transform: translateY(21.2%); }
+  86%  { transform: translateY(21.2%); }
+  100% { opacity: 1; transform: translateY(3%); }
+}
+/* the old sheet is pulled up and out of the machine */
+@keyframes lift {
+  0%   { opacity: 1; transform: translateY(3%); }
+  25%  { opacity: 1; transform: translateY(-4%) rotate(-0.4deg); }
+  100% { opacity: 0; transform: translateY(-62%) rotate(-2.5deg); }
+}
+/* the machine shudders while the keys strike (two names so it can restart) */
+@keyframes shake-a { 0%,100% { transform: none; } 50% { transform: translate(0.5px, -0.6px) rotate(0.06deg); } }
+@keyframes shake-b { 0%,100% { transform: none; } 50% { transform: translate(-0.5px, -0.6px) rotate(-0.06deg); } }
+
+:root { --line1: 21; --line2: 21; }  /* fallback lengths used for timing */
+.sheet { --typing: calc((var(--line1) + var(--line2)) * var(--char-time) + 3.2s); }
+
+/* timings of line 1 and line 2 */
+.sheet .type-line:nth-child(1) { --delay: var(--type-start); }
+.sheet .type-line:nth-child(2) { --delay: calc(var(--type-start) + var(--line1) * var(--char-time) + 0.8s); }
+
+/* -- active sheet: feed in + type -- */
+#sheet-0:checked ~ .art .sheet--a,
+#sheet-a:checked ~ .art .sheet--a,
+#sheet-b:checked ~ .art .sheet--b {
+  animation: feed calc(var(--type-start) + var(--typing)) var(--ease-physical) forwards;
+}
+#sheet-0:checked ~ .art .sheet--a .type-line,
+#sheet-a:checked ~ .art .sheet--a .type-line,
+#sheet-b:checked ~ .art .sheet--b .type-line {
+  animation: type calc(var(--chars) * var(--char-time)) steps(var(--chars), end) var(--delay) forwards;
+}
+/* new sheets wait for the old one to leave */
+#sheet-a:checked ~ .art .sheet--a,
+#sheet-b:checked ~ .art .sheet--b { animation-delay: 0.9s; }
+#sheet-a:checked ~ .art .sheet--a .type-line,
+#sheet-b:checked ~ .art .sheet--b .type-line { animation-delay: calc(var(--delay) + 0.9s); }
+
+/* -- previous sheet: carried away with its text -- */
+#sheet-b:checked ~ .art .sheet--a,
+#sheet-a:checked ~ .art .sheet--b { animation: lift 2.4s var(--ease-physical) forwards; }
+#sheet-b:checked ~ .art .sheet--a .type-line,
+#sheet-a:checked ~ .art .sheet--b .type-line { width: calc(var(--chars) * 1ch + 0.1ch); }
+
+/* -- the machine shakes while typing -- */
+.typewriter { --strikes: calc(var(--line1) + var(--line2)); }
+#sheet-0:checked ~ .art .typewriter,
+#sheet-a:checked ~ .art .typewriter {
+  animation: shake-a var(--char-time) steps(2) var(--type-start) var(--strikes);
+}
+#sheet-a:checked ~ .art .typewriter { animation-delay: calc(var(--type-start) + 0.9s); }
+#sheet-b:checked ~ .art .typewriter {
+  animation: shake-b var(--char-time) steps(2) calc(var(--type-start) + 0.9s) var(--strikes);
+}
+
+/* -- the clickable typewriter (only the label for the next sheet shows) -- */
+.typewriter-hit {
+  position: absolute;
+  left: 19%; top: 41%; width: 62%; height: 44%;
+  z-index: 4;
+  cursor: pointer;
+  display: none;
+}
+#sheet-0:checked ~ .art .to-b,
+#sheet-a:checked ~ .art .to-b,
+#sheet-b:checked ~ .art .to-a { display: block; }
+.typewriter-hit:hover ~ .typewriter,
+.machine:has(.typewriter-hit:hover) .typewriter { filter: brightness(1.12); }
+.typewriter { transition: filter .8s ease; }
+
+
+/* ---------- 06  SCENE 02 — FLOWERS ----------
+   The flowers emerge from the dark after the text has been read.    */
+@keyframes emerge {
+  from { opacity: 0; filter: brightness(0) blur(3px) saturate(0); }
+  55%  { opacity: .55; filter: brightness(.45) blur(1px) saturate(.2); }
+  to   { opacity: 1; filter: brightness(1) blur(0) saturate(1); }
+}
+.flowers {
+  animation: emerge linear both;
+  animation-timeline: view();
+  animation-range: cover 38% cover 70%;
+}
+
+
+/* ---------- 07  SCENE 04 — FOUR MEN ----------
+   The photograph is deliberately left still; only the text moves.   */
+.scene--coffin { z-index: 1; }
+
+/* ---------- 08  SCENE 05 — PHOTOGRAPH + TIN BOX ---------- */
+.scene--belongings { z-index: 1; }
+
+/* hover: the photograph tilts as if picked up and turned to the light */
+.photo {
+  z-index: 4;
+  transform-origin: 50% 55%;
+  transition: transform 1.6s var(--ease-physical), filter 1.6s var(--ease-physical);
+  outline: none;
+}
+.photo:hover,
+.photo:focus-visible {
+  transform: perspective(1100px) rotateY(-10deg) rotateX(4deg) rotateZ(-1.5deg);
+  filter: brightness(1.08) drop-shadow(14px 18px 18px rgb(0 0 0 / .45));
+}
+
+.tin { z-index: 2; }
+.tin__lid  {
+  transform-origin: 50% 36%;            /* the top edge of the lid */
+  transition: transform 2.2s var(--ease-physical), filter 2.2s;
+  z-index: 3;
+}
+/* the area inside the tin, where keepsakes are placed */
+.tin__contents {
+  position: absolute;
+  left: 33.5%; top: 38%; width: 33%; height: 24%;
+  opacity: 0;
+  transition: opacity 2.4s ease 0.9s;
+  z-index: 2;
+}
+.keepsake {
+  position: absolute;
+  left: var(--x, 10%);
+  top: var(--y, 10%);
+  width: var(--w, 40%);
+  transform: rotate(var(--r, 0deg));
+  filter: grayscale(.4) brightness(.9);
+}
+.tin__hit {
+  position: absolute;
+  left: 31.8%; top: 35.8%; width: 36.4%; height: 28.4%;
+  z-index: 4;
+  cursor: pointer;
+}
+
+/* open: the lid is lifted and slid off; the contents come out of the dark */
+#tin-open:checked ~ .art .tin__lid {
+  transform: translate(-6%, -27%) rotate(-14deg);
+  filter: drop-shadow(10px 16px 14px rgb(0 0 0 / .5));
+}
+#tin-open:checked ~ .art .tin__contents { opacity: 1; }
+#tin-open:checked ~ .art .tin__hit { top: 8%; height: 56%; }  /* click lid again to close */
+
+
+/* ---------- 09  SCENE 06 — GUITAR / GUN ----------
+   The gun lies underneath the guitar. Hovering the guitar tears it
+   away in uneven horizontal strips (steps), with a brief shudder,
+   and the gun is left behind. Moving away slowly restores the guitar. */
+.morph__hit {
+  position: absolute;
+  left: 44%; top: 29%; width: 46%; height: 42%;   /* area of the guitar */
+  z-index: 5;
+  cursor: crosshair;
+  outline: none;
+}
+.morph__guitar {
+  z-index: 3;
+  clip-path: inset(0 0 0 0);
+  transition:
+    clip-path 1.8s steps(9, end),
+    filter 1.4s ease,
+    opacity 1.2s ease 1.1s;
+}
+.morph__gun {
+  z-index: 2;
+  opacity: 0;
+  filter: brightness(.25) contrast(1.4) blur(1px);
+  transition: opacity 1.6s ease .2s, filter 2.6s ease .2s;
+}
+.morph:has(.morph__hit:hover) .morph__guitar,
+.morph:has(.morph__hit:focus-visible) .morph__guitar {
+  clip-path: inset(0 0 100% 0);
+  filter: brightness(.45) contrast(1.5) saturate(.2);
+  opacity: 0;
+  animation: shudder .45s steps(3) 2;
+}
+.morph:has(.morph__hit:hover) .morph__gun,
+.morph:has(.morph__hit:focus-visible) .morph__gun {
+  opacity: 1;
+  filter: brightness(.95) contrast(1.05) blur(0);
+}
+@keyframes shudder {
+  0%, 100% { transform: none; }
+  33% { transform: translate(-2px, 1px) skewX(-.5deg); }
+  66% { transform: translate(2px, 0) skewX(.5deg); }
+}
+
+/* ---------- 10  SCENE 07 — LECTERN SPLIT ----------
+   The imagined life on the left, the real one far below on the right,
+   with the empty lectern standing between them.                     */
+.verse--left  { text-align: left; }
+.verse--right { text-align: left; }
+.verse--right .line { border-top: 1px solid rgb(236 235 228 / .14); padding-top: .6em; }
+
+
+/* ---------- 11  SCENE 08 — MEDALS ----------
+   The medals stay pinned while the three lines scroll past.
+   The last line (.trigger) owns a named scroll timeline; the dirty
+   medals and the splash are driven by that line only.               */
+.scene--medals {
+  height: 280vh;
+  timeline-scope: --twenties;
+}
+.medals-pin {
+  position: sticky;
+  top: 4vh;
+  width: min(100%, calc(92vh * 1440 / 1606));
+  margin-inline: auto;
+}
+.verse--scroll {
+  position: absolute;
+  left: 50%;
+  top: 70vh;
+  transform: translateX(-50%);
+  max-width: 40ch;
+  text-align: center;
+}
+.verse--scroll .line + .line { margin-top: 55vh; }
+
+.trigger { view-timeline-name: --twenties; }
+
+@keyframes contaminate {
+  from { opacity: 0; filter: blur(4px) saturate(.4); }
+  to   { opacity: 1; filter: blur(0) saturate(1); }
+}
+.contaminate {
+  opacity: 0;
+  animation: contaminate linear both;
+  animation-timeline: --twenties;
+}
+.contaminate.splash { animation-range: contain 12% contain 48%; }
+.contaminate.dirty  { animation-range: contain 28% contain 68%; }
+
+
+/* ---------- 12  SCENE 09 + 10 — ENDING ---------- */
+.scene--pause {
+  min-height: 150vh;
+  display: grid;
+  place-items: center;
+  margin-top: 0;
+}
+.scene--pause .line { letter-spacing: 0.3em; }
+
+.scene--end {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  margin-top: 0;
+  overflow: hidden;
+}
+.end-splash {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: min(120%, 1500px);
+  transform: translate(-50%, -50%);
+  opacity: 0.22;
+  filter: saturate(.7) blur(1px);
+}
+.title {
+  position: relative;
+  font-size: clamp(16px, 1.6vw, 24px);
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+}
+.title .bleed {
+  display: inline-block;
+  cursor: default;
+  transition:
+    color 3.2s var(--ease-physical),
+    filter 3.2s var(--ease-physical),
+    text-shadow 3.6s var(--ease-physical),
+    letter-spacing 4s var(--ease-physical);
+}
+.title .bleed:hover {
+  color: var(--blood);
+  filter: blur(1.6px);
+  letter-spacing: 0.5em;
+  text-shadow:
+    0 0.1em 0.3em rgb(159 29 18 / .7),
+    0 0.6em 1.4em rgb(194 65 12 / .35);
+}
+
+
+/* ---------- 13  SOUND ---------- */
+.sound {
+  position: fixed;
+  left: 16px;
+  bottom: 16px;
+  width: 210px;
+  height: 32px;
+  z-index: 50;
+  opacity: 0.35;
+  filter: grayscale(1) invert(.86) sepia(.25);
+  transition: opacity .8s ease;
+}
+.sound:hover, .sound:focus-visible { opacity: 0.9; }
+
+
+/* ---------- 14  FALLBACK ----------
+   Browsers without scroll-driven animations simply show everything. */
+@supports not (animation-timeline: view()) {
+  .reveal-ink, .reveal-drift, .reveal-wipe, .reveal-slow, .flowers { animation: none; }
+  .contaminate { animation: none; opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .typewriter { animation: none !important; }
+}
+
+
+/* ---------- 15  SMALLER SCREENS ---------- */
+@media (max-width: 900px) {
+  :root { --text-size: 12px; }
+  .verse { max-width: 30ch; }
+}
+
+@media (max-width: 640px) {
+  .scene { margin-top: 0; overflow-x: clip; }
+  /* enlarge the artwork and crop the sides so objects stay readable */
+  .art { width: 150%; margin-left: -25%; }
+  .scene--typewriter .art { width: 170%; margin-left: -35%; }
+
+  /* text leaves the picture and follows it */
+  .verse,
+  .verse--left,
+  .verse--right {
+    position: relative;
+    left: auto; top: auto;
+    max-width: none;
+    padding: 0 16px;
+    margin: -14% 0 18vh;
+  }
+  .verse--right { text-align: right; margin-top: 0; }
+  .scene--lectern .verse--left { margin-bottom: 4vh; }
+
+  .scene--medals { height: 240vh; }
+  .medals-pin .art { width: 100%; margin-left: 0; }
+  .verse--scroll { position: absolute; left: 50%; padding: 0 16px; margin: 0; width: 100%; }
+
+  .scene--end .title { letter-spacing: 0.25em; }
+  .sound { width: 160px; left: 12px; bottom: 12px; }
+}
