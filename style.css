@@ -134,6 +134,16 @@ p { margin: 0; }
   object-fit: cover;
 }
 
+/* Figma "soft light" blend. .bg-match is the same fixed page background,
+   placed inside the picture so the blend mixes with it (seamlessly). */
+.soft-light { mix-blend-mode: soft-light; }
+.bg-match {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--olive-dark) url("assets/background.jpg") center / cover no-repeat fixed;
+}
+
 /* A text box, placed like the Figma text box (--tx, --ty). */
 .verse {
   position: absolute;
