@@ -437,6 +437,31 @@ p { margin: 0; }
   animation-range: exit 0% exit 100%;
 }
 
+/* The text must sit ABOVE the blood. While the scene is pinned, the text
+   shown is a copy on its own fixed layer (.latch-text) above the blood;
+   the original text inside the scene is shown only while it slides in
+   or out.                                                              */
+.latch-text {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  z-index: 7;
+  pointer-events: none;
+  opacity: 0;
+  animation: pinned-only linear none;
+  animation-timeline: --scene;
+  animation-range: contain 0% contain 100%;
+}
+.latch-text .ink { pointer-events: auto; }   /* hover blur still works */
+
+@keyframes hide-while-pinned { from { opacity: 0; } to { opacity: 0; } }
+.scene--medals .stage .verse {
+  animation: hide-while-pinned linear none;
+  animation-timeline: --scene;
+  animation-range: contain 0% contain 100%;
+}
+
 
 /* ---------- 09  SCENE 09 — ENDING ----------
    Already there (no typing), centred on the page. The first word of
