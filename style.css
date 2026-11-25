@@ -296,6 +296,12 @@ body { timeline-scope: --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g9; }
 }
 .scene--medals .verse .type-line { margin-inline: auto; }
 
+/* ...and the two text boxes together are centred on the middle of the
+   screen. Group = box 1 (2 lines) + gap + box 2 (2 lines) = 7.3em;
+   the gap between the boxes is the one from Figma (4.7em).            */
+.scene--medals .frame > .verse:nth-child(2) { top: calc(50% - 3.65em); }
+.scene--medals .frame > .verse:nth-child(3) { top: calc(50% + 1.05em); }
+
 
 /* ---------- 03  PINNED SCENES + SCROLL TYPING ----------
    A .pinned section is taller than the screen. Its .stage sticks to the
