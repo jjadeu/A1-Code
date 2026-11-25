@@ -18,9 +18,8 @@
   Every line of the poem lives in a <span class="ink">…</span>.
   Replace the text in [ square brackets ] with your own lines.
 
-  Typewriter lines (scene 01) also have style="--chars: NN".
-  Set NN to the number of characters in that line (spaces included),
-  so the typing stops exactly at the last letter.
+  Typewriter (scene 01): find "TYPING TIMING" below and set --line1 and
+  --line2 to the number of characters in each line (spaces included).
   =====================================================================
 -->
 
@@ -38,20 +37,22 @@
       <img class="layer" src="assets/typewriter-splash.png" alt="" style="--x:0%; --y:0%; --w:100.6%; --ar:1449/1227">
 
       <!-- The paper sits behind the typewriter and is clipped at the roller -->
-      <div class="layer machine" style="--x:6.74%; --y:4.2%; --w:86.53%; --ar:1246/1055">
+      <!-- TYPING TIMING: --line1 / --line2 = number of characters in line 1 / line 2
+           (spaces included). Everything else is calculated from these two numbers. -->
+      <div class="layer machine" style="--x:6.74%; --y:4.2%; --w:86.53%; --ar:1246/1055; --line1: 21; --line2: 21">
         <div class="sheet-clip">
           <div class="sheet sheet--a">
             <img src="assets/paper.png" alt="">
             <p class="typed">
-              <span class="type-line" style="--chars: 21"><span class="ink">[ paste line 1 here ]</span></span>
-              <span class="type-line" style="--chars: 21"><span class="ink">[ paste line 2 here ]</span></span>
+              <span class="type-line"><span class="ink">[ paste line 1 here ]</span></span>
+              <span class="type-line"><span class="ink">[ paste line 2 here ]</span></span>
             </p>
           </div>
           <div class="sheet sheet--b">
             <img src="assets/paper.png" alt="">
             <p class="typed">
-              <span class="type-line" style="--chars: 21"><span class="ink">[ paste line 1 here ]</span></span>
-              <span class="type-line" style="--chars: 21"><span class="ink">[ paste line 2 here ]</span></span>
+              <span class="type-line"><span class="ink">[ paste line 1 here ]</span></span>
+              <span class="type-line"><span class="ink">[ paste line 2 here ]</span></span>
             </p>
           </div>
         </div>

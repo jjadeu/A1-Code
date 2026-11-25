@@ -42,8 +42,6 @@
   /* timing */
   --slow: 1.6s;
   --ease-physical: cubic-bezier(.45, .05, .25, 1);
-  --char-time: 95ms;          /* typewriter: time per letter */
-  --type-start: 1.4s;         /* pause before the first letter */
 }
 
 
@@ -249,53 +247,65 @@ p, h1 { margin: 0; font-weight: 400; }
 .type-line .ink { transition: none; }
 .type-line .ink:hover { letter-spacing: 0; transform: none; filter: blur(0.6px); }
 
+/* ---- TIMING ----
+   Everything is calculated from --line1 / --line2 (set in index.html on
+   .machine) and these three knobs:                                      */
+.machine {
+  --char-time: 95ms;     /* one key strike                       */
+  --type-start: 1.4s;    /* silence before the first letter      */
+  --line-pause: 0.9s;    /* carriage return between the lines    */
+  --wait: 0s;            /* extra wait while an old sheet leaves */
+
+  --d1:   calc(var(--type-start) + var(--wait));                        /* line 1 starts */
+  --d2:   calc(var(--d1) + var(--line1) * var(--char-time) + var(--line-pause)); /* line 2 starts */
+  --done: calc(var(--d2) + var(--line2) * var(--char-time));            /* last letter   */
+}
+#sheet-a:checked ~ .art .machine,
+#sheet-b:checked ~ .art .machine { --wait: 0.9s; }
+
+.type-line:nth-child(1) { --chars: var(--line1); --delay: var(--d1); }
+.type-line:nth-child(2) { --chars: var(--line2); --delay: var(--d2); }
+
 /* typing: one step = one letter (monospace font, 1ch each) */
 @keyframes type { to { width: calc(var(--chars) * 1ch + 0.1ch); } }
 
-/* paper feed: rises a little after every line */
-/* (typing happens at the roller; when the passage is finished the
-   sheet is wound up so it can be read) */
-@keyframes feed {
-  0%   { opacity: 0; transform: translateY(24%); }
-  5%   { opacity: 1; transform: translateY(24%); }
-  50%  { transform: translateY(24%); }
-  53%  { transform: translateY(21.2%); }
-  86%  { transform: translateY(21.2%); }
-  100% { opacity: 1; transform: translateY(3%); }
-}
+/* paper: appears in the roller, jumps one line at the carriage return,
+   and is wound up after the last letter so it can be read.
+   The three moves are added together (animation-composition: add).  */
+@keyframes appear   { from { opacity: 0; } to { opacity: 1; } }
+@keyframes linefeed { from { transform: translateY(0); } to { transform: translateY(-2.8%); } }
+@keyframes windup   { from { transform: translateY(0); } to { transform: translateY(-21%); } }
+
 /* the old sheet is pulled up and out of the machine */
 @keyframes lift {
-  0%   { opacity: 1; transform: translateY(3%); }
-  25%  { opacity: 1; transform: translateY(-4%) rotate(-0.4deg); }
+  0%   { opacity: 1; transform: translateY(0.2%); }
+  25%  { opacity: 1; transform: translateY(-6%) rotate(-0.4deg); }
   100% { opacity: 0; transform: translateY(-62%) rotate(-2.5deg); }
 }
-/* the machine shudders while the keys strike (two names so it can restart) */
+
+/* the machine: a tremor for every key, a jolt at the carriage return.
+   (a and b versions are identical; the new name makes it restart)    */
 @keyframes shake-a { 0%,100% { transform: none; } 50% { transform: translate(0.5px, -0.6px) rotate(0.06deg); } }
 @keyframes shake-b { 0%,100% { transform: none; } 50% { transform: translate(-0.5px, -0.6px) rotate(-0.06deg); } }
-
-:root { --line1: 21; --line2: 21; }  /* fallback lengths used for timing */
-.sheet { --typing: calc((var(--line1) + var(--line2)) * var(--char-time) + 3.2s); }
-
-/* timings of line 1 and line 2 */
-.sheet .type-line:nth-child(1) { --delay: var(--type-start); }
-.sheet .type-line:nth-child(2) { --delay: calc(var(--type-start) + var(--line1) * var(--char-time) + 0.8s); }
+@keyframes return-a { 0%,100% { transform: none; } 30% { transform: translateX(-2px) rotate(-0.1deg); } 65% { transform: translateX(1px); } }
+@keyframes return-b { 0%,100% { transform: none; } 30% { transform: translateX(-2px) rotate(-0.1deg); } 65% { transform: translateX(1px); } }
 
 /* -- active sheet: feed in + type -- */
 #sheet-0:checked ~ .art .sheet--a,
 #sheet-a:checked ~ .art .sheet--a,
 #sheet-b:checked ~ .art .sheet--b {
-  animation: feed calc(var(--type-start) + var(--typing)) var(--ease-physical) forwards;
+  transform: translateY(24%);
+  animation:
+    appear   0.6s ease                 var(--wait) both,
+    linefeed 0.35s var(--ease-physical) calc(var(--d2) - var(--line-pause) * 0.6) both,
+    windup   2.6s var(--ease-physical)  calc(var(--done) + 1s) both;
+  animation-composition: replace, add, add;
 }
 #sheet-0:checked ~ .art .sheet--a .type-line,
 #sheet-a:checked ~ .art .sheet--a .type-line,
 #sheet-b:checked ~ .art .sheet--b .type-line {
   animation: type calc(var(--chars) * var(--char-time)) steps(var(--chars), end) var(--delay) forwards;
 }
-/* new sheets wait for the old one to leave */
-#sheet-a:checked ~ .art .sheet--a,
-#sheet-b:checked ~ .art .sheet--b { animation-delay: 0.9s; }
-#sheet-a:checked ~ .art .sheet--a .type-line,
-#sheet-b:checked ~ .art .sheet--b .type-line { animation-delay: calc(var(--delay) + 0.9s); }
 
 /* -- previous sheet: carried away with its text -- */
 #sheet-b:checked ~ .art .sheet--a,
@@ -303,17 +313,20 @@ p, h1 { margin: 0; font-weight: 400; }
 #sheet-b:checked ~ .art .sheet--a .type-line,
 #sheet-a:checked ~ .art .sheet--b .type-line { width: calc(var(--chars) * 1ch + 0.1ch); }
 
-/* -- the machine shakes while typing -- */
-.typewriter { --strikes: calc(var(--line1) + var(--line2)); }
+/* -- the machine shakes only while keys are struck -- */
 #sheet-0:checked ~ .art .typewriter,
 #sheet-a:checked ~ .art .typewriter {
-  animation: shake-a var(--char-time) steps(2) var(--type-start) var(--strikes);
+  animation:
+    shake-a  var(--char-time) steps(2) var(--d1) var(--line1),
+    return-a 0.4s ease calc(var(--d2) - var(--line-pause) * 0.7),
+    shake-a  var(--char-time) steps(2) var(--d2) var(--line2);
 }
-#sheet-a:checked ~ .art .typewriter { animation-delay: calc(var(--type-start) + 0.9s); }
 #sheet-b:checked ~ .art .typewriter {
-  animation: shake-b var(--char-time) steps(2) calc(var(--type-start) + 0.9s) var(--strikes);
+  animation:
+    shake-b  var(--char-time) steps(2) var(--d1) var(--line1),
+    return-b 0.4s ease calc(var(--d2) - var(--line-pause) * 0.7),
+    shake-b  var(--char-time) steps(2) var(--d2) var(--line2);
 }
-
 /* -- the clickable typewriter (only the label for the next sheet shows) -- */
 .typewriter-hit {
   position: absolute;
