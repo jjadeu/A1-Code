@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>A1 Code</title>
+  <meta name="description" content="A1 Code — projects and experiments.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#">A1&nbsp;Code</a>
+    <nav>
+      <a href="#about">About</a>
+      <a href="#projects">Projects</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>Hello, I'm building things with code.</h1>
+      <p>This site is hosted on GitHub Pages from the <code>A1-Code</code> repository. Edit <code>index.html</code>, commit, and push — the site updates automatically.</p>
+      <a class="button" href="https://github.com/jjadeu/A1-Code">View on GitHub</a>
+    </section>
+
+    <section id="about">
+      <h2>About</h2>
+      <p>Write a short introduction about yourself or this project here.</p>
+    </section>
+
+    <section id="projects">
+      <h2>Projects</h2>
+      <div class="cards">
+        <article class="card">
+          <h3>Project one</h3>
+          <p>A short description of what it does and what you learned.</p>
+        </article>
+        <article class="card">
+          <h3>Project two</h3>
+          <p>A short description of what it does and what you learned.</p>
+        </article>
+        <article class="card">
+          <h3>Project three</h3>
+          <p>A short description of what it does and what you learned.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="contact">
+      <h2>Contact</h2>
+      <p>Find me on <a href="https://github.com/jjadeu">GitHub</a>.</p>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; <span id="year"></span> A1 Code</p>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
