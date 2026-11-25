@@ -99,7 +99,7 @@
           <img class="layer" src="assets/aerodrome.jpg" alt="An empty aerodrome under a heavy sky" style="--x:0%; --y:0%; --w:100%">
           <img class="layer" src="assets/aerodrome-splash.png" alt="" style="--x:0%; --y:2%; --w:100%">
         </div>
-        <div class="verse" style="--tx:33.75%; --ty:78.88%">
+        <div class="verse verse--center" style="--tx:33.75%; --ty:78.88%; --bw:32.5%">
           <span class="type-line" style="--chars: 25; --from: 6%;  --to: 42%"><span class="ink">Mourning in the aerodrome</span></span>
           <span class="type-line" style="--chars: 32; --from: 50%; --to: 90%"><span class="ink">The weather warmer, he is colder</span></span>
         </div>
@@ -205,7 +205,7 @@
   <!-- ===================== SCENE 08 — MEDALS =====================
        Clean while the lines type. Once the last line is finished,
        the splash spreads and the medals turn dirty.                  -->
-  <section class="scene pinned" aria-label="Scene eight" style="--scroll: 210vh">
+  <section class="scene pinned scene--medals" aria-label="Scene eight" style="--scroll: 210vh">
     <div class="stage">
       <div class="frame" style="--ratio: 1440 / 1606">
         <div class="art">
@@ -224,16 +224,28 @@
         </div>
       </div>
     </div>
+    <!-- The blood that stays: this trigger sticks once the last line is
+       typed; from then on the blood layer below stays visible.        -->
+    <div class="latch-trigger">
+      <div class="latch-view">
+        <div class="frame" style="--ratio: 1440 / 1606">
+          <div class="art latch-art">
+            <img class="layer" src="assets/medal-splash.png" alt="" style="--x:0%; --y:0%; --w:100%">
+            <img class="layer" src="assets/medals-dirty.png" alt="" style="--x:0%; --y:0.04%; --w:100%">
+          </div>
+        </div>
+      </div>
+    </div>
   </section>
 
 
   <!-- ===================== SCENE 09 — ENDING ===================== -->
-  <section class="scene pinned scene--end" aria-label="Scene nine" style="--scroll: 160vh">
+  <section class="scene scene--end" aria-label="Scene nine">
     <div class="stage">
       <div class="frame" style="--ratio: 1440 / 800">
-        <div class="verse" style="--tx:33.75%; --ty:44%">
+        <div class="verse verse--end">
           <span class="type-line" style="--chars: 12; --from: 8%;  --to: 40%"><span class="ink">What a waste</span></span>
-          <span class="type-line title" style="--chars: 13; --from: 58%; --to: 90%"><span class="ink bleed">Army dreamers</span></span>
+          <span class="type-line title" style="--chars: 13; --from: 58%; --to: 90%"><span class="ink bleed"><span class="red">Army</span> dreamers</span></span>
         </div>
       </div>
     </div>

@@ -43,10 +43,13 @@ body {
   margin: 0;
   color: var(--ink-white);
   font-family: var(--font);
+  /* one green background that stays still; only the content scrolls */
   background-color: var(--olive-dark);
   background-image: url("assets/background.jpg");
-  background-size: 100% auto;
-  background-repeat: repeat-y;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   overflow-x: clip;
 }
 
@@ -148,6 +151,19 @@ p { margin: 0; }
   animation-timing-function: steps(var(--chars), end);
   animation-timeline: --scene;
   animation-range: contain var(--from, 5%) contain var(--to, 45%);
+}
+
+/* Centred text box (scene 03). The line keeps its full width so it
+   stays centred; the letters are uncovered left to right instead.   */
+@keyframes type-clip {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0 0 0); }
+}
+.verse--center { width: var(--bw); text-align: center; }
+.verse--center .type-line {
+  width: calc(var(--chars) * 1ch + 0.1ch);
+  margin-inline: auto;
+  animation-name: type-clip;
 }
 
 
@@ -361,21 +377,80 @@ p { margin: 0; }
 
 /* ---------- 08  SCENE 08 — MEDALS ----------
    The medals stay clean while the lines type (0–68% of the scroll).
-   After the last word, the splash spreads, then the medals get dirty. */
-@keyframes contaminate {
-  from { opacity: 0; }
+   The moment the last letter is typed, the blood appears all at once.
+
+   CSS has no memory, so "stays forever" is built like this:
+   .latch-trigger — an invisible sticky element. Its negative `top`
+                    makes it stick exactly when 69% of the scene has been
+                    scrolled (the last letter typed).
+   .latch-view    — the blood, on a fixed layer over the medals. While the
+                    trigger is stuck, a 1 ms paused animation is allowed
+                    to run; once it has run, its end state (visible) is
+                    kept, even when you scroll back up.
+   The section's clip-path keeps that fixed layer inside this scene, and
+   .latch-art hides it while the scene slides in or out.
+   .contaminate   — the blood inside the scene itself, shown while the
+                    scene slides out at the end, so it leaves with it.  */
+.scene--medals { clip-path: inset(0); }
+
+@keyframes appear-now { from { opacity: 0; } to { opacity: 1; } }
+
+.latch-trigger {
+  position: sticky;
+  top: calc(100vh - var(--scroll) * 0.69);
+  height: 1px;
+  container-type: scroll-state;
+}
+.latch-view {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  z-index: 6;
+  opacity: 0;
+  animation: appear-now 1ms forwards paused;
+}
+@container scroll-state(stuck: top) {
+  .latch-view { animation-play-state: running; }
+}
+
+/* visible only while the scene is pinned on screen: the animation
+   applies (opacity 1) inside that range and not at all outside it */
+@keyframes pinned-only {
+  from { opacity: 1; }
   to   { opacity: 1; }
 }
-.contaminate {
-  animation: contaminate linear both;
+.latch-art {
+  opacity: 0;
+  animation: pinned-only linear none;
   animation-timeline: --scene;
+  animation-range: contain 0% contain 100%;
 }
-.contaminate.splash { animation-range: contain 72% contain 88%; }
-.contaminate.dirty  { animation-range: contain 80% contain 97%; }
+
+.contaminate {
+  opacity: 0;
+  animation: appear-now linear both;
+  animation-timing-function: steps(1, start);   /* no fade: on or off */
+  animation-timeline: --scene;
+  animation-range: exit 0% exit 100%;
+}
 
 
 /* ---------- 09  SCENE 09 — ENDING ----------
-   Hover the last line: it blurs and bleeds from white into red. */
+   Already there (no typing), centred on the page. The first word of
+   the last line is stained red. Hover: the line blurs and bleeds red. */
+.verse--end {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+.scene--end .type-line {
+  width: auto;
+  animation: none;
+}
+.red { color: var(--blood); }
 .title .bleed {
   transition:
     color 3.2s var(--ease-physical),
@@ -411,6 +486,7 @@ p { margin: 0; }
   .pinned .stage { position: relative; }
   .verse .type-line { animation: none; width: auto; }
   .contaminate { animation: none; opacity: 0; }
+  .verse--center .type-line { animation: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
