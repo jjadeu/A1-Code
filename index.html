@@ -15,185 +15,228 @@
 <!--
   =====================================================================
   HOW TO EDIT THE POEM
-  Every line of the poem lives in a <span class="ink">…</span>.
-  Replace the text in [ square brackets ] with your own lines.
+  Every poem line is one <span class="type-line" style="--chars: NN">.
+  1. Replace the text in [ square brackets ] with your line.
+  2. --chars must equal the number of characters in that line
+     (letters + spaces + punctuation). The numbers are already set for
+     the poem as written in the brief.
 
-  Typewriter (scene 01): find "TYPING TIMING" below and set --line1 and
-  --line2 to the number of characters in each line (spaces included).
+  HOW THE SCROLL WORKS
+  A section with class "pinned" stays on screen while you scroll; the
+  scrolling types the lines. --scroll sets how much scrolling that takes.
+  Each line types between --from and --to (% of that scrolling).
+
+  Positions (--x --y --w, --tx --ty) are taken from the Figma frame,
+  in % of the scene picture.
   =====================================================================
 -->
 
 <main class="archive">
 
-  <!-- ===================== SCENE 01 — TYPEWRITER ===================== -->
-  <!-- Three hidden radio buttons remember which sheet is in the machine.
-       Clicking the typewriter (a <label>) switches to the next sheet.   -->
-  <section class="scene scene--typewriter" aria-label="Scene one">
+  <!-- ===================== SCENE 01 — TYPEWRITER =====================
+       Types by itself when the page opens. Clicking the typewriter
+       pulls the sheet out and types a new one.                        -->
+  <section class="scene" aria-label="Scene one">
     <input class="sheet-state" type="radio" name="sheet" id="sheet-0" checked>
     <input class="sheet-state" type="radio" name="sheet" id="sheet-b">
     <input class="sheet-state" type="radio" name="sheet" id="sheet-a">
 
-    <div class="art" style="--ratio: 1440 / 1240">
-      <img class="layer" src="assets/typewriter-splash.png" alt="" style="--x:0%; --y:0%; --w:100.6%; --ar:1449/1227">
+    <div class="stage">
+      <div class="frame" style="--ratio: 1440 / 1227">
+        <div class="art">
+          <img class="layer" src="assets/typewriter-splash.png" alt="" style="--x:0%; --y:0%; --w:100.6%; --ar:1449/1227">
 
-      <!-- The paper sits behind the typewriter and is clipped at the roller -->
-      <!-- TYPING TIMING: --line1 / --line2 = number of characters in line 1 / line 2
-           (spaces included). Everything else is calculated from these two numbers. -->
-      <div class="layer machine" style="--x:6.74%; --y:4.2%; --w:86.53%; --ar:1246/1055; --line1: 21; --line2: 21">
-        <div class="sheet-clip">
-          <div class="sheet sheet--a">
-            <img src="assets/paper.png" alt="">
-            <p class="typed">
-              <span class="type-line"><span class="ink">[ paste line 1 here ]</span></span>
-              <span class="type-line"><span class="ink">[ paste line 2 here ]</span></span>
-            </p>
-          </div>
-          <div class="sheet sheet--b">
-            <img src="assets/paper.png" alt="">
-            <p class="typed">
-              <span class="type-line"><span class="ink">[ paste line 1 here ]</span></span>
-              <span class="type-line"><span class="ink">[ paste line 2 here ]</span></span>
-            </p>
+          <!-- TYPING TIMING: --line1 / --line2 = characters in line 1 / line 2 -->
+          <div class="layer machine" style="--x:15.28%; --y:12.71%; --w:69.44%; --ar:1000/847; --line1: 19; --line2: 28">
+            <div class="sheet-clip">
+              <div class="sheet sheet--a">
+                <img src="assets/paper.png" alt="">
+                <p class="typed">
+                  <span class="type-line"><span class="ink">[ line 1 ]</span></span>
+                  <span class="type-line"><span class="ink">[ line 2 ]</span></span>
+                </p>
+              </div>
+              <div class="sheet sheet--b">
+                <img src="assets/paper.png" alt="">
+                <p class="typed">
+                  <span class="type-line"><span class="ink">[ line 1 ]</span></span>
+                  <span class="type-line"><span class="ink">[ line 2 ]</span></span>
+                </p>
+              </div>
+            </div>
+            <img class="typewriter" src="assets/typewriter.png" alt="An old typewriter">
+            <label class="typewriter-hit to-b" for="sheet-b" title="Feed a new sheet"><span class="sr-only">Feed a new sheet</span></label>
+            <label class="typewriter-hit to-a" for="sheet-a" title="Feed a new sheet"><span class="sr-only">Feed a new sheet</span></label>
           </div>
         </div>
-        <img class="typewriter" src="assets/typewriter.png" alt="An old typewriter">
-        <label class="typewriter-hit to-b" for="sheet-b" title="Feed a new sheet"><span class="sr-only">Feed a new sheet</span></label>
-        <label class="typewriter-hit to-a" for="sheet-a" title="Feed a new sheet"><span class="sr-only">Feed a new sheet</span></label>
       </div>
     </div>
   </section>
 
 
   <!-- ===================== SCENE 02 — FLOWERS ===================== -->
-  <section class="scene scene--flowers" aria-label="Scene two">
-    <div class="art" style="--ratio: 1440 / 1219">
-      <img class="layer" src="assets/flower-splash.png" alt="" style="--x:0%; --y:0%; --w:100%">
-      <img class="layer flowers" src="assets/flowers.png" alt="A bunch of flowers" style="--x:37.7%; --y:8.9%; --w:74%; --ar:1065.5/942.5">
-    </div>
-    <div class="verse" style="--tx:9%; --ty:38%">
-      <p class="line reveal-ink"><span class="ink">[ scene 02 · line 1 ]</span></p>
-      <p class="line reveal-ink late"><span class="ink">[ scene 02 · line 2 ]</span></p>
+  <section class="scene pinned" aria-label="Scene two" style="--scroll: 150vh">
+    <div class="stage">
+      <div class="frame" style="--ratio: 1440 / 1219">
+        <div class="art">
+          <img class="layer" src="assets/flower-splash.png" alt="" style="--x:0%; --y:0%; --w:100%">
+          <img class="layer" src="assets/flowers.png" alt="A bunch of flowers" style="--x:41.84%; --y:12.37%; --w:67.44%; --ar:971.15/859.04">
+        </div>
+        <div class="verse" style="--tx:12.57%; --ty:33.72%">
+          <span class="type-line" style="--chars: 30; --from: 6%;  --to: 44%"><span class="ink">[ line 3 ]</span></span>
+          <span class="type-line" style="--chars: 24; --from: 52%; --to: 90%"><span class="ink">[ line 4 ]</span></span>
+        </div>
+      </div>
     </div>
   </section>
 
 
   <!-- ===================== SCENE 03 — AERODROME ===================== -->
-  <section class="scene scene--aerodrome" aria-label="Scene three">
-    <div class="art" style="--ratio: 1440 / 1245">
-      <img class="layer" src="assets/aerodrome.jpg" alt="An empty aerodrome under a heavy sky" style="--x:0%; --y:0%; --w:100%">
-      <img class="layer" src="assets/aerodrome-splash.png" alt="" style="--x:0%; --y:2%; --w:100%">
-    </div>
-    <div class="verse" style="--tx:12%; --ty:74%">
-      <p class="line reveal-drift"><span class="ink">[ scene 03 · line 1 ]</span></p>
-      <p class="line reveal-drift late"><span class="ink">[ scene 03 · line 2 ]</span></p>
+  <section class="scene pinned" aria-label="Scene three" style="--scroll: 150vh">
+    <div class="stage">
+      <div class="frame" style="--ratio: 1440 / 1245">
+        <div class="art">
+          <img class="layer" src="assets/aerodrome.jpg" alt="An empty aerodrome under a heavy sky" style="--x:0%; --y:0%; --w:100%">
+          <img class="layer" src="assets/aerodrome-splash.png" alt="" style="--x:0%; --y:2%; --w:100%">
+        </div>
+        <div class="verse" style="--tx:33.75%; --ty:78.88%">
+          <span class="type-line" style="--chars: 25; --from: 6%;  --to: 42%"><span class="ink">[ line 5 ]</span></span>
+          <span class="type-line" style="--chars: 32; --from: 50%; --to: 90%"><span class="ink">[ line 6 ]</span></span>
+        </div>
+      </div>
     </div>
   </section>
 
 
   <!-- ===================== SCENE 04 — FOUR MEN ===================== -->
-  <!-- Add your photo as assets/coffin.jpg — it appears automatically. -->
-  <section class="scene scene--coffin" aria-label="Scene four">
-    <div class="art" style="--ratio: 1440 / 1220">
-      <img class="layer" src="assets/coffin-splash.png" alt="" style="--x:0%; --y:0%; --w:100.07%">
-      <img class="layer" src="assets/coffin.png" alt="Four men in uniform carrying a coffin" style="--x:0%; --y:0.1%; --w:100.07%">
-    </div>
-    <div class="verse" style="--tx:70%; --ty:50%">
-      <p class="line reveal-wipe"><span class="ink">[ scene 04 · line 1 ]</span></p>
-      <p class="line reveal-wipe late"><span class="ink">[ scene 04 · line 2 ]</span></p>
+  <section class="scene pinned" aria-label="Scene four" style="--scroll: 150vh">
+    <div class="stage">
+      <div class="frame" style="--ratio: 1440 / 1221">
+        <div class="art">
+          <img class="layer" src="assets/coffin-splash.png" alt="" style="--x:0%; --y:0%; --w:100.07%">
+          <img class="layer" src="assets/coffin.png" alt="Four men in uniform carrying a coffin" style="--x:0%; --y:0.08%; --w:100.07%">
+        </div>
+        <div class="verse" style="--tx:59.03%; --ty:24.32%">
+          <span class="type-line" style="--chars: 19; --from: 6%;  --to: 40%"><span class="ink">[ line 7 ]</span></span>
+          <span class="type-line" style="--chars: 31; --from: 48%; --to: 90%"><span class="ink">[ line 8 ]</span></span>
+        </div>
+      </div>
     </div>
   </section>
 
 
-  <!-- ===================== SCENE 05 — BELONGINGS ===================== -->
+  <!-- ===================== SCENE 05 — BELONGINGS =====================
+       The only scene you can scroll past freely.                       -->
   <section class="scene scene--belongings" aria-label="Scene five: belongings">
     <input class="tin-state" type="checkbox" id="tin-open">
-    <div class="art" style="--ratio: 1440 / 1290">
-      <img class="layer" src="assets/photo-splash.png" alt="" style="--x:0%; --y:5%; --w:100%">
+    <div class="stage">
+      <div class="frame" style="--ratio: 1440 / 1290">
+        <div class="art">
+          <img class="layer" src="assets/photo-splash.png" alt="" style="--x:0%; --y:5%; --w:100%">
 
-      <!-- The tin: body, contents, lid. Lid and body are separate images. -->
-      <div class="layer tin" style="--x:32.8%; --y:0%; --w:93.9%; --ar:1352.7/1207; --rot:9deg">
-        <img class="tin__body" src="assets/tin-body.png" alt="An open tin box">
+          <!-- The tin: body, contents, lid. Lid and body are separate images. -->
+          <div class="layer tin" style="--x:32.8%; --y:0%; --w:93.9%; --ar:1352.7/1207; --rot:9deg">
+            <img class="tin__body" src="assets/tin-body.png" alt="An open tin box">
 
-        <!-- ADD OBJECTS HERE. Each object is one <img class="keepsake">.
-             Use --x / --y (position inside the tin) and --r (rotation).
-             Example:
-             <img class="keepsake" src="assets/dog-tag.png" alt="Dog tag"
-                  style="--x:20%; --y:30%; --w:35%; --r:-8deg">            -->
-        <div class="tin__contents">
+            <!-- ADD OBJECTS HERE. Each object is one <img class="keepsake">.
+                 Use --x / --y (position inside the tin) and --r (rotation).
+                 Example:
+                 <img class="keepsake" src="assets/dog-tag.png" alt="Dog tag"
+                      style="--x:20%; --y:30%; --w:35%; --r:-8deg">            -->
+            <div class="tin__contents">
+            </div>
+
+            <img class="tin__lid" src="assets/tin-lid.png" alt="">
+            <label class="tin__hit" for="tin-open" title="Open the tin"><span class="sr-only">Open or close the tin</span></label>
+          </div>
+
+          <img class="layer photo" tabindex="0" src="assets/photo.png" alt="A faded portrait of a young soldier" style="--x:0%; --y:32.6%; --w:60.9%; --ar:877.6/769.75; --rot:-7deg">
         </div>
-
-        <img class="tin__lid" src="assets/tin-lid.png" alt="">
-        <label class="tin__hit" for="tin-open" title="Open the tin"><span class="sr-only">Open or close the tin</span></label>
       </div>
-
-      <img class="layer photo" tabindex="0" src="assets/photo.png" alt="A faded portrait of a young soldier" style="--x:0%; --y:32.6%; --w:60.9%; --ar:877.6/769.75; --rot:-7deg">
     </div>
   </section>
 
 
-  <!-- ===================== SCENE 06 — GUITAR / GUN ===================== -->
-  <!-- The gun sits under the guitar. Hovering the guitar (.morph__hit)
-       tears the guitar away and lets the gun show through.            -->
-  <section class="scene scene--guitar" aria-label="Scene six">
-    <div class="art morph" style="--ratio: 1440 / 1220">
-      <img class="layer" src="assets/guitar-splash.png" alt="" style="--x:0%; --y:0.1%; --w:100%">
-      <img class="layer morph__gun" src="assets/gun.png" alt="" style="--x:0%; --y:0.1%; --w:100%">
-      <img class="layer morph__guitar" src="assets/guitar.png" alt="A guitar" style="--x:0%; --y:0%; --w:100%">
-      <span class="morph__hit" tabindex="0" role="img" aria-label="A guitar that turns into a gun"></span>
-    </div>
-    <div class="verse" style="--tx:10%; --ty:30%">
-      <p class="line whisper reveal-ink"><span class="ink">[ scene 06 · line 1 ]</span></p>
-      <p class="line whisper reveal-ink late"><span class="ink">[ scene 06 · line 2 ]</span></p>
-      <p class="line reveal-wipe later gap"><span class="ink">[ scene 06 · line 3 ]</span></p>
+  <!-- ===================== SCENE 06 — GUITAR / GUN =====================
+       Hover the guitar: it fades out and the gun fades in.             -->
+  <section class="scene pinned" aria-label="Scene six" style="--scroll: 210vh">
+    <div class="stage">
+      <div class="frame morph" style="--ratio: 1440 / 1056">
+        <div class="art">
+          <img class="layer" src="assets/guitar-splash.png" alt="" style="--x:13.47%; --y:0.1%; --w:86.53%; --ar:1246/1055">
+          <img class="layer morph__gun" src="assets/gun.png" alt="A gun" style="--x:13.47%; --y:0.1%; --w:86.53%; --ar:1246/1055">
+          <img class="layer morph__guitar" src="assets/guitar.png" alt="A guitar" style="--x:13.47%; --y:0%; --w:86.53%; --ar:1246/1056">
+          <span class="morph__hit" tabindex="0" aria-label="Guitar"></span>
+        </div>
+        <div class="verse" style="--tx:13.47%; --ty:29.17%">
+          <span class="type-line" style="--chars: 19; --from: 5%;  --to: 26%"><span class="ink">[ line 9 ]</span></span>
+          <span class="type-line" style="--chars: 30; --from: 32%; --to: 58%"><span class="ink">[ line 10 ]</span></span>
+        </div>
+        <div class="verse" style="--tx:13.47%; --ty:41.95%">
+          <span class="type-line" style="--chars: 41; --from: 64%; --to: 94%"><span class="ink">[ line 11 ]</span></span>
+        </div>
+      </div>
     </div>
   </section>
 
 
   <!-- ===================== SCENE 07 — LECTERN (split) ===================== -->
-  <section class="scene scene--lectern" aria-label="Scene seven">
-    <div class="art" style="--ratio: 1440 / 1220">
-      <img class="layer" src="assets/lectern-splash.png" alt="" style="--x:0%; --y:0%; --w:100%">
-      <img class="layer" src="assets/lectern.png" alt="An empty lectern" style="--x:0%; --y:0%; --w:100%">
-    </div>
-    <div class="verse verse--left" style="--tx:7%; --ty:24%">
-      <p class="line whisper reveal-drift"><span class="ink">[ scene 07 · line 1 ]</span></p>
-      <p class="line whisper reveal-drift late"><span class="ink">[ scene 07 · line 2 ]</span></p>
-    </div>
-    <div class="verse verse--right" style="--tx:64%; --ty:70%">
-      <p class="line reveal-wipe"><span class="ink">[ scene 07 · line 3 ]</span></p>
-    </div>
-  </section>
-
-
-  <!-- ===================== SCENE 08 — MEDALS ===================== -->
-  <!-- The medals stay pinned while the lines pass.
-       The line with class "trigger" starts the contamination.       -->
-  <section class="scene scene--medals" aria-label="Scene eight">
-    <div class="medals-pin">
-      <div class="art" style="--ratio: 1440 / 1606">
-        <img class="layer" src="assets/medals-clean.png" alt="Military medals" style="--x:0%; --y:0%; --w:100%">
-        <img class="layer contaminate splash" src="assets/medal-splash.png" alt="" style="--x:0%; --y:0%; --w:100%">
-        <img class="layer contaminate dirty" src="assets/medals-dirty.png" alt="" style="--x:0%; --y:0%; --w:100%">
+  <section class="scene pinned" aria-label="Scene seven" style="--scroll: 210vh">
+    <div class="stage">
+      <div class="frame" style="--ratio: 1440 / 1220">
+        <div class="art">
+          <img class="layer" src="assets/lectern-splash.png" alt="" style="--x:0%; --y:0%; --w:100%">
+          <img class="layer" src="assets/lectern.png" alt="An empty lectern" style="--x:0%; --y:0%; --w:100%">
+        </div>
+        <div class="verse" style="--tx:8.82%; --ty:48.85%">
+          <span class="type-line" style="--chars: 19; --from: 5%;  --to: 26%"><span class="ink">[ line 12 ]</span></span>
+          <span class="type-line" style="--chars: 31; --from: 32%; --to: 58%"><span class="ink">[ line 13 ]</span></span>
+        </div>
+        <!-- In Figma this line wraps in two: words 1–5, then the rest -->
+        <div class="verse" style="--tx:68.61%; --ty:48.85%">
+          <span class="type-line" style="--chars: 18; --from: 64%; --to: 78%"><span class="ink">[ line 14 · part 1 ]</span></span>
+          <span class="type-line" style="--chars: 16; --from: 80%; --to: 94%"><span class="ink">[ line 14 · part 2 ]</span></span>
+        </div>
       </div>
     </div>
-    <div class="verse verse--scroll">
-      <p class="line whisper reveal-ink"><span class="ink">[ scene 08 · line 1 ]</span></p>
-      <p class="line whisper reveal-ink"><span class="ink">[ scene 08 · line 2 ]</span></p>
-      <p class="line trigger reveal-wipe"><span class="ink">[ scene 08 · line 3 ]</span></p>
+  </section>
+
+
+  <!-- ===================== SCENE 08 — MEDALS =====================
+       Clean while the lines type. Once the last line is finished,
+       the splash spreads and the medals turn dirty.                  -->
+  <section class="scene pinned" aria-label="Scene eight" style="--scroll: 210vh">
+    <div class="stage">
+      <div class="frame" style="--ratio: 1440 / 1606">
+        <div class="art">
+          <img class="layer" src="assets/medals-clean.png" alt="Military medals" style="--x:0%; --y:0%; --w:100%">
+          <img class="layer contaminate splash" src="assets/medal-splash.png" alt="" style="--x:0%; --y:0%; --w:100%">
+          <img class="layer contaminate dirty" src="assets/medals-dirty.png" alt="" style="--x:0%; --y:0.04%; --w:100%">
+        </div>
+        <div class="verse" style="--tx:5.56%; --ty:50%">
+          <span class="type-line" style="--chars: 19; --from: 4%;  --to: 18%"><span class="ink">[ line 15 ]</span></span>
+          <span class="type-line" style="--chars: 27; --from: 22%; --to: 40%"><span class="ink">[ line 16 ]</span></span>
+        </div>
+        <!-- In Figma this line wraps in two: words 1–6, then the rest -->
+        <div class="verse" style="--tx:5.56%; --ty:57.03%">
+          <span class="type-line" style="--chars: 25; --from: 44%; --to: 58%"><span class="ink">[ line 17 · part 1 ]</span></span>
+          <span class="type-line" style="--chars: 15; --from: 60%; --to: 68%"><span class="ink">[ line 17 · part 2 ]</span></span>
+        </div>
+      </div>
     </div>
   </section>
 
 
-  <!-- ===================== SCENE 09 — PAUSE ===================== -->
-  <section class="scene scene--pause" aria-label="Scene nine">
-    <p class="line reveal-slow"><span class="ink">[ scene 09 ]</span></p>
-  </section>
-
-
-  <!-- ===================== SCENE 10 — ENDING ===================== -->
-  <section class="scene scene--end" aria-label="Scene ten">
-    <img class="end-splash" src="assets/typewriter-splash.png" alt="">
-    <h1 class="title reveal-slow"><span class="bleed">[ final line ]</span></h1>
+  <!-- ===================== SCENE 09 — ENDING ===================== -->
+  <section class="scene pinned scene--end" aria-label="Scene nine" style="--scroll: 160vh">
+    <div class="stage">
+      <div class="frame" style="--ratio: 1440 / 800">
+        <div class="verse" style="--tx:33.75%; --ty:44%">
+          <span class="type-line" style="--chars: 12; --from: 8%;  --to: 40%"><span class="ink">[ line 18 ]</span></span>
+          <span class="type-line title" style="--chars: 13; --from: 58%; --to: 90%"><span class="ink bleed">[ line 19 ]</span></span>
+        </div>
+      </div>
+    </div>
   </section>
 
 </main>

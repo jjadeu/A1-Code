@@ -3,52 +3,39 @@
    HTML + CSS only. Built and tested for Google Chrome.
 
    Contents
-   00  Variables (colours, type, timing)
+   00  Variables
    01  Base page
-   02  Shared building blocks (.scene, .art, .layer, .verse, .line)
-   03  Ink bleed on hover
-   04  Scroll reveals
+   02  Scenes, stage, frame, layers
+   03  Pinned scenes + scroll typing
+   04  Ink blur on hover
    05  Scene 01 — typewriter
-   06  Scene 02 — flowers
-   07  Scene 04 — archive photograph
-   08  Scene 05 — photograph + tin box
-   09  Scene 06 — guitar / gun
-   10  Scene 07 — lectern split
-   11  Scene 08 — medals
-   12  Scene 09 + 10 — ending
-   13  Sound
-   14  Fallback for browsers without scroll-driven animation
-   15  Smaller screens
+   06  Scene 05 — photograph + tin box
+   07  Scene 06 — guitar / gun
+   08  Scene 08 — medals
+   09  Scene 09 — ending
+   10  Sound
+   11  Fallback + smaller screens
    ===================================================================== */
 
 
 /* ---------- 00  VARIABLES ---------- */
 :root {
-  /* palette */
+  --olive-dark: #2c2f28;
   --olive-black: #23251f;
-  --olive-dark:  #2c2f28;
-  --olive:       #4a4f3c;
-  --ash:         #b9bfb0;
-  --ink-white:   #ecebe4;
-  --ink-paper:   #262821;   /* typewriter ink on paper */
-  --rust:        #c2410c;
-  --blood:       #9f1d12;
+  --ink-white:  #cbdec4;   /* text colour from Figma */
+  --ink-paper:  #3a241f;   /* typewriter ink on the paper (Figma) */
+  --blood:      #9f1d12;
 
-  /* type */
   --font: "Courier Prime", "Courier New", monospace;
-  --text-size: clamp(11px, 0.92vw, 14px);
-  --tracking: 0.06em;
+  --text-size: 1.667cqw;   /* = 24px on the 1440px Figma frame */
+  --paper-size: 1.111cqw;  /* = 16px on the 1440px Figma frame */
 
-  /* timing */
-  --slow: 1.6s;
   --ease-physical: cubic-bezier(.45, .05, .25, 1);
 }
 
 
 /* ---------- 01  BASE ---------- */
-*,
-*::before,
-*::after { box-sizing: border-box; }
+*, *::before, *::after { box-sizing: border-box; }
 
 html { background: var(--olive-black); }
 
@@ -56,9 +43,6 @@ body {
   margin: 0;
   color: var(--ink-white);
   font-family: var(--font);
-  font-size: var(--text-size);
-  letter-spacing: var(--tracking);
-  line-height: 1.9;
   background-color: var(--olive-dark);
   background-image: url("assets/background.jpg");
   background-size: 100% auto;
@@ -67,7 +51,7 @@ body {
 }
 
 img { display: block; max-width: none; user-select: none; -webkit-user-drag: none; }
-p, h1 { margin: 0; font-weight: 400; }
+p { margin: 0; }
 
 .sr-only {
   position: absolute; width: 1px; height: 1px; overflow: hidden;
@@ -75,37 +59,46 @@ p, h1 { margin: 0; font-weight: 400; }
 }
 
 
-/* ---------- 02  SHARED BUILDING BLOCKS ---------- */
+/* ---------- 02  SCENES, STAGE, FRAME, LAYERS ----------
+   .stage  = one screen (100vh), the picture is centred in it
+   .frame  = the Figma frame, scaled to fit the screen without cropping
+   .art    = the pictures, layered
+   .layer  = one picture, placed with Figma numbers:
+             --x (left) --y (top) --w (width), in % of the frame        */
+.scene { position: relative; }
 
-/* Every scene is a positioned box. Scenes overlap slightly so the
-   splashes bleed from one scene into the next. */
-.scene {
-  position: relative;
-  margin-top: -6vw;
+.stage {
+  height: 100vh;
+  height: 100svh;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
 }
-.scene:first-child { margin-top: 0; }
 
-/* .art keeps the proportions of the Figma frame (set with --ratio). */
+.frame {
+  position: relative;
+  width: min(100vw, calc(100svh * var(--ratio)));
+  container-type: inline-size;          /* text sizes follow the frame */
+}
+
 .art {
   position: relative;
   width: 100%;
-  aspect-ratio: var(--ratio, 1440 / 1220);
-  container-type: inline-size;
+  aspect-ratio: var(--ratio);
 }
 
-/* Each picture is placed with three numbers taken from Figma:
-   --x (left), --y (top), --w (width), all in % of the scene. */
 .layer {
   position: absolute;
   left: var(--x, 0%);
   top: var(--y, 0%);
   width: var(--w, 100%);
   height: auto;
-  aspect-ratio: var(--ar, auto);   /* Figma box size, when it crops the image */
+  aspect-ratio: var(--ar, auto);   /* Figma box, when it crops the image */
   object-fit: cover;
   rotate: var(--rot, 0deg);        /* Figma rotation */
 }
-/* pictures inside a layer box fill it the way Figma does (cover) */
+
+/* pictures inside a box fill it the way Figma does (cover) */
 .machine > img,
 .machine .sheet img,
 .tin > img {
@@ -116,89 +109,61 @@ p, h1 { margin: 0; font-weight: 400; }
   object-fit: cover;
 }
 
-/* A block of poem text, placed with --tx / --ty. */
+/* A text box, placed like the Figma text box (--tx, --ty). */
 .verse {
   position: absolute;
-  left: var(--tx, 10%);
-  top: var(--ty, 40%);
+  left: var(--tx);
+  top: var(--ty);
   z-index: 5;
-  max-width: 34ch;
+  font-size: max(var(--text-size), 10px);
+  line-height: 1.3;
 }
 
-.line { display: block; }
-.line + .line { margin-top: 0.15em; }
-.line.gap { margin-top: 1.4em; }
 
-/* bracketed lines are quieter */
-.whisper { opacity: 0.62; font-style: italic; }
+/* ---------- 03  PINNED SCENES + SCROLL TYPING ----------
+   A .pinned section is taller than the screen. Its .stage sticks to the
+   top while you scroll through the extra height (--scroll), and that
+   scrolling types the lines. You cannot reach the next scene before
+   every line is typed.                                                 */
+.pinned {
+  height: calc(100svh + var(--scroll, 150vh));
+  view-timeline-name: --scene;
+}
+.pinned .stage {
+  position: sticky;
+  top: 0;
+}
 
-.splash-dim { opacity: 0.55; filter: saturate(.8); }
+/* one line = one typed strip. One step of the animation = one letter */
+.type-line {
+  display: block;
+  width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+@keyframes type { to { width: calc(var(--chars) * 1ch + 0.1ch); } }
+
+.verse .type-line {
+  animation: type linear both;
+  animation-timing-function: steps(var(--chars), end);
+  animation-timeline: --scene;
+  animation-range: contain var(--from, 5%) contain var(--to, 45%);
+}
 
 
-/* ---------- 03  INK BLEED ON HOVER ----------
-   The tear-on-ink effect: the letters soften, spread into a pale halo
-   and drift apart a little, then dry again when the mouse leaves.   */
+/* ---------- 04  INK BLUR ON HOVER ----------
+   Only a blur — like a drop of water soaking into the ink.            */
 .ink {
   display: inline-block;
-  transition:
-    filter 1.4s var(--ease-physical),
-    text-shadow 1.4s var(--ease-physical),
-    letter-spacing 2s var(--ease-physical),
-    transform 2s var(--ease-physical);
+  transition: filter 1.6s var(--ease-physical);
 }
 .ink:hover {
-  filter: blur(0.7px);
-  letter-spacing: 0.11em;
-  transform: scaleY(1.06) translateY(0.04em);
-  text-shadow:
-    0 0.05em 0.12em rgb(236 235 228 / .55),
-    0 0.25em 0.5em  rgb(236 235 228 / .22),
-    0.12em 0.6em 0.9em rgb(150 158 140 / .25);
-  transition-duration: 2.2s, 2.2s, 3s, 3s;
+  filter: blur(1.4px);
+  transition-duration: 2.4s;
 }
-
-
-/* ---------- 04  SCROLL REVEALS ----------
-   Each line has its own scroll timeline (view()): it animates while the
-   line travels into the screen. Different scenes use different reveals
-   so the pacing does not feel mechanical.                              */
-@keyframes reveal-ink {             /* ink soaking up into the paper */
-  from { opacity: 0; filter: blur(7px); }
-  60%  { opacity: .7; }
-  to   { opacity: 1; filter: blur(0); }
-}
-@keyframes reveal-drift {           /* a memory surfacing */
-  from { opacity: 0; transform: translateY(0.9em); letter-spacing: 0.24em; }
-  to   { opacity: 1; transform: none; letter-spacing: var(--tracking); }
-}
-@keyframes reveal-wipe {            /* a line being typed / uncovered */
-  from { clip-path: inset(0 100% 0 0); }
-  to   { clip-path: inset(0 0 0 0); }
-}
-@keyframes reveal-slow {
-  from { opacity: 0; filter: blur(4px); }
-  to   { opacity: 1; filter: blur(0); }
-}
-
-.reveal-ink, .reveal-drift, .reveal-wipe, .reveal-slow {
-  animation-fill-mode: both;
-  animation-timing-function: linear;
-  animation-timeline: view();
-  animation-range: entry 70% cover 42%;
-}
-.reveal-wipe  { animation-timing-function: steps(18, end); }
-.reveal-ink   { animation-name: reveal-ink; }
-.reveal-drift { animation-name: reveal-drift; }
-.reveal-wipe  { animation-name: reveal-wipe; }
-.reveal-slow  { animation-name: reveal-slow; animation-range: cover 18% cover 52%; }
-
-/* later lines in a passage wait a little longer */
-.late  { animation-range: entry 100% cover 50%; }
-.later { animation-range: cover 30% cover 58%; }
 
 
 /* ---------- 05  SCENE 01 — TYPEWRITER ---------- */
-.scene--typewriter { z-index: 2; }
 
 /* hidden inputs that remember clicks. position: fixed stops the page
    from jumping to them when their label is clicked. */
@@ -209,9 +174,9 @@ p, h1 { margin: 0; font-weight: 400; }
 }
 
 .machine { z-index: 3; }
-.typewriter { z-index: 2; pointer-events: none; }
+.typewriter { z-index: 2; pointer-events: none; transition: filter .8s ease; }
 
-/* The paper is only visible above the roller (inset bottom = 54%). */
+/* The paper is only visible above the roller. */
 .sheet-clip {
   position: absolute;
   inset: 0;
@@ -226,52 +191,34 @@ p, h1 { margin: 0; font-weight: 400; }
 
 .typed {
   position: absolute;
-  left: 35%;
-  top: 19%;
+  left: 34.3%;          /* Figma text box on the paper */
+  top: 19.13%;
   color: var(--ink-paper);
-  font-size: max(0.95cqw, 7px);
-  letter-spacing: 0;
-  line-height: 1.75;
+  font-size: max(var(--paper-size), 7px);
+  line-height: 1.3;
 }
-.typed .ink:hover {
-  text-shadow:
-    0 0.05em 0.12em rgb(38 40 33 / .55),
-    0 0.3em 0.5em  rgb(38 40 33 / .25);
-}
-.type-line {
-  display: block;
-  width: 0;
-  overflow: hidden;
-  white-space: nowrap;
-}
-.type-line .ink { transition: none; }
-.type-line .ink:hover { letter-spacing: 0; transform: none; filter: blur(0.6px); }
 
 /* ---- TIMING ----
-   Everything is calculated from --line1 / --line2 (set in index.html on
-   .machine) and these three knobs:                                      */
+   Calculated from --line1 / --line2 (set in index.html on .machine)
+   and these three knobs:                                              */
 .machine {
   --char-time: 95ms;     /* one key strike                       */
   --type-start: 1.4s;    /* silence before the first letter      */
   --line-pause: 0.9s;    /* carriage return between the lines    */
   --wait: 0s;            /* extra wait while an old sheet leaves */
 
-  --d1:   calc(var(--type-start) + var(--wait));                        /* line 1 starts */
-  --d2:   calc(var(--d1) + var(--line1) * var(--char-time) + var(--line-pause)); /* line 2 starts */
-  --done: calc(var(--d2) + var(--line2) * var(--char-time));            /* last letter   */
+  --d1:   calc(var(--type-start) + var(--wait));
+  --d2:   calc(var(--d1) + var(--line1) * var(--char-time) + var(--line-pause));
+  --done: calc(var(--d2) + var(--line2) * var(--char-time));
 }
-#sheet-a:checked ~ .art .machine,
-#sheet-b:checked ~ .art .machine { --wait: 0.9s; }
+#sheet-a:checked ~ .stage .machine,
+#sheet-b:checked ~ .stage .machine { --wait: 0.9s; }
 
-.type-line:nth-child(1) { --chars: var(--line1); --delay: var(--d1); }
-.type-line:nth-child(2) { --chars: var(--line2); --delay: var(--d2); }
-
-/* typing: one step = one letter (monospace font, 1ch each) */
-@keyframes type { to { width: calc(var(--chars) * 1ch + 0.1ch); } }
+.typed .type-line:nth-child(1) { --chars: var(--line1); --delay: var(--d1); }
+.typed .type-line:nth-child(2) { --chars: var(--line2); --delay: var(--d2); }
 
 /* paper: appears in the roller, jumps one line at the carriage return,
-   and is wound up after the last letter so it can be read.
-   The three moves are added together (animation-composition: add).  */
+   and is wound up after the last letter so it can be read. */
 @keyframes appear   { from { opacity: 0; } to { opacity: 1; } }
 @keyframes linefeed { from { transform: translateY(0); } to { transform: translateY(-2.8%); } }
 @keyframes windup   { from { transform: translateY(0); } to { transform: translateY(-21%); } }
@@ -284,49 +231,50 @@ p, h1 { margin: 0; font-weight: 400; }
 }
 
 /* the machine: a tremor for every key, a jolt at the carriage return.
-   (a and b versions are identical; the new name makes it restart)    */
+   (a and b versions are identical; the new name makes it restart) */
 @keyframes shake-a { 0%,100% { transform: none; } 50% { transform: translate(0.5px, -0.6px) rotate(0.06deg); } }
 @keyframes shake-b { 0%,100% { transform: none; } 50% { transform: translate(-0.5px, -0.6px) rotate(-0.06deg); } }
 @keyframes return-a { 0%,100% { transform: none; } 30% { transform: translateX(-2px) rotate(-0.1deg); } 65% { transform: translateX(1px); } }
 @keyframes return-b { 0%,100% { transform: none; } 30% { transform: translateX(-2px) rotate(-0.1deg); } 65% { transform: translateX(1px); } }
 
 /* -- active sheet: feed in + type -- */
-#sheet-0:checked ~ .art .sheet--a,
-#sheet-a:checked ~ .art .sheet--a,
-#sheet-b:checked ~ .art .sheet--b {
+#sheet-0:checked ~ .stage .sheet--a,
+#sheet-a:checked ~ .stage .sheet--a,
+#sheet-b:checked ~ .stage .sheet--b {
   transform: translateY(24%);
   animation:
-    appear   0.6s ease                 var(--wait) both,
+    appear   0.6s ease                  var(--wait) both,
     linefeed 0.35s var(--ease-physical) calc(var(--d2) - var(--line-pause) * 0.6) both,
     windup   2.6s var(--ease-physical)  calc(var(--done) + 1s) both;
   animation-composition: replace, add, add;
 }
-#sheet-0:checked ~ .art .sheet--a .type-line,
-#sheet-a:checked ~ .art .sheet--a .type-line,
-#sheet-b:checked ~ .art .sheet--b .type-line {
+#sheet-0:checked ~ .stage .sheet--a .type-line,
+#sheet-a:checked ~ .stage .sheet--a .type-line,
+#sheet-b:checked ~ .stage .sheet--b .type-line {
   animation: type calc(var(--chars) * var(--char-time)) steps(var(--chars), end) var(--delay) forwards;
 }
 
 /* -- previous sheet: carried away with its text -- */
-#sheet-b:checked ~ .art .sheet--a,
-#sheet-a:checked ~ .art .sheet--b { animation: lift 2.4s var(--ease-physical) forwards; }
-#sheet-b:checked ~ .art .sheet--a .type-line,
-#sheet-a:checked ~ .art .sheet--b .type-line { width: calc(var(--chars) * 1ch + 0.1ch); }
+#sheet-b:checked ~ .stage .sheet--a,
+#sheet-a:checked ~ .stage .sheet--b { animation: lift 2.4s var(--ease-physical) forwards; }
+#sheet-b:checked ~ .stage .sheet--a .type-line,
+#sheet-a:checked ~ .stage .sheet--b .type-line { width: calc(var(--chars) * 1ch + 0.1ch); }
 
 /* -- the machine shakes only while keys are struck -- */
-#sheet-0:checked ~ .art .typewriter,
-#sheet-a:checked ~ .art .typewriter {
+#sheet-0:checked ~ .stage .typewriter,
+#sheet-a:checked ~ .stage .typewriter {
   animation:
     shake-a  var(--char-time) steps(2) var(--d1) var(--line1),
     return-a 0.4s ease calc(var(--d2) - var(--line-pause) * 0.7),
     shake-a  var(--char-time) steps(2) var(--d2) var(--line2);
 }
-#sheet-b:checked ~ .art .typewriter {
+#sheet-b:checked ~ .stage .typewriter {
   animation:
     shake-b  var(--char-time) steps(2) var(--d1) var(--line1),
     return-b 0.4s ease calc(var(--d2) - var(--line-pause) * 0.7),
     shake-b  var(--char-time) steps(2) var(--d2) var(--line2);
 }
+
 /* -- the clickable typewriter (only the label for the next sheet shows) -- */
 .typewriter-hit {
   position: absolute;
@@ -335,34 +283,13 @@ p, h1 { margin: 0; font-weight: 400; }
   cursor: pointer;
   display: none;
 }
-#sheet-0:checked ~ .art .to-b,
-#sheet-a:checked ~ .art .to-b,
-#sheet-b:checked ~ .art .to-a { display: block; }
-.typewriter-hit:hover ~ .typewriter,
+#sheet-0:checked ~ .stage .to-b,
+#sheet-a:checked ~ .stage .to-b,
+#sheet-b:checked ~ .stage .to-a { display: block; }
 .machine:has(.typewriter-hit:hover) .typewriter { filter: brightness(1.12); }
-.typewriter { transition: filter .8s ease; }
 
 
-/* ---------- 06  SCENE 02 — FLOWERS ----------
-   The flowers emerge from the dark after the text has been read.    */
-@keyframes emerge {
-  from { opacity: 0; filter: brightness(0) blur(3px) saturate(0); }
-  55%  { opacity: .55; filter: brightness(.45) blur(1px) saturate(.2); }
-  to   { opacity: 1; filter: brightness(1) blur(0) saturate(1); }
-}
-.flowers {
-  animation: emerge linear both;
-  animation-timeline: view();
-  animation-range: cover 38% cover 70%;
-}
-
-
-/* ---------- 07  SCENE 04 — FOUR MEN ----------
-   The photograph is deliberately left still; only the text moves.   */
-.scene--coffin { z-index: 1; }
-
-/* ---------- 08  SCENE 05 — PHOTOGRAPH + TIN BOX ---------- */
-.scene--belongings { z-index: 1; }
+/* ---------- 06  SCENE 05 — PHOTOGRAPH + TIN BOX ---------- */
 
 /* hover: the photograph tilts as if picked up and turned to the light */
 .photo {
@@ -378,7 +305,7 @@ p, h1 { margin: 0; font-weight: 400; }
 }
 
 .tin { z-index: 2; }
-.tin__lid  {
+.tin__lid {
   transform-origin: 50% 36%;            /* the top edge of the lid */
   transition: transform 2.2s var(--ease-physical), filter 2.2s;
   z-index: 3;
@@ -405,156 +332,63 @@ p, h1 { margin: 0; font-weight: 400; }
   z-index: 4;
   cursor: pointer;
 }
-
 /* open: the lid is lifted and slid off; the contents come out of the dark */
-#tin-open:checked ~ .art .tin__lid {
+#tin-open:checked ~ .stage .tin__lid {
   transform: translate(-6%, -27%) rotate(-14deg);
   filter: drop-shadow(10px 16px 14px rgb(0 0 0 / .5));
 }
-#tin-open:checked ~ .art .tin__contents { opacity: 1; }
-#tin-open:checked ~ .art .tin__hit { top: 8%; height: 56%; }  /* click lid again to close */
+#tin-open:checked ~ .stage .tin__contents { opacity: 1; }
+#tin-open:checked ~ .stage .tin__hit { top: 8%; height: 56%; }  /* click lid again to close */
 
 
-/* ---------- 09  SCENE 06 — GUITAR / GUN ----------
-   The gun lies underneath the guitar. Hovering the guitar tears it
-   away in uneven horizontal strips (steps), with a brief shudder,
-   and the gun is left behind. Moving away slowly restores the guitar. */
+/* ---------- 07  SCENE 06 — GUITAR / GUN ----------
+   Hover the guitar: it fades out and the gun fades in. */
 .morph__hit {
   position: absolute;
-  left: 44%; top: 29%; width: 46%; height: 42%;   /* area of the guitar */
-  z-index: 5;
-  cursor: crosshair;
+  left: 51.8%; top: 29%; width: 39.8%; height: 41%;   /* area of the guitar */
+  z-index: 4;
+  cursor: default;
   outline: none;
 }
-.morph__guitar {
-  z-index: 3;
-  clip-path: inset(0 0 0 0);
-  transition:
-    clip-path 1.8s steps(9, end),
-    filter 1.4s ease,
-    opacity 1.2s ease 1.1s;
-}
-.morph__gun {
-  z-index: 2;
-  opacity: 0;
-  filter: brightness(.25) contrast(1.4) blur(1px);
-  transition: opacity 1.6s ease .2s, filter 2.6s ease .2s;
-}
+.morph__guitar { z-index: 3; transition: opacity 1.4s ease; }
+.morph__gun    { z-index: 2; opacity: 0; transition: opacity 1.4s ease; }
+
 .morph:has(.morph__hit:hover) .morph__guitar,
-.morph:has(.morph__hit:focus-visible) .morph__guitar {
-  clip-path: inset(0 0 100% 0);
-  filter: brightness(.45) contrast(1.5) saturate(.2);
-  opacity: 0;
-  animation: shudder .45s steps(3) 2;
-}
+.morph:has(.morph__hit:focus-visible) .morph__guitar { opacity: 0; }
 .morph:has(.morph__hit:hover) .morph__gun,
-.morph:has(.morph__hit:focus-visible) .morph__gun {
-  opacity: 1;
-  filter: brightness(.95) contrast(1.05) blur(0);
-}
-@keyframes shudder {
-  0%, 100% { transform: none; }
-  33% { transform: translate(-2px, 1px) skewX(-.5deg); }
-  66% { transform: translate(2px, 0) skewX(.5deg); }
-}
-
-/* ---------- 10  SCENE 07 — LECTERN SPLIT ----------
-   The imagined life on the left, the real one far below on the right,
-   with the empty lectern standing between them.                     */
-.verse--left  { text-align: left; }
-.verse--right { text-align: left; }
-.verse--right .line { border-top: 1px solid rgb(236 235 228 / .14); padding-top: .6em; }
+.morph:has(.morph__hit:focus-visible) .morph__gun { opacity: 1; }
 
 
-/* ---------- 11  SCENE 08 — MEDALS ----------
-   The medals stay pinned while the three lines scroll past.
-   The last line (.trigger) owns a named scroll timeline; the dirty
-   medals and the splash are driven by that line only.               */
-.scene--medals {
-  height: 280vh;
-  timeline-scope: --twenties;
-}
-.medals-pin {
-  position: sticky;
-  top: 4vh;
-  width: min(100%, calc(92vh * 1440 / 1606));
-  margin-inline: auto;
-}
-.verse--scroll {
-  position: absolute;
-  left: 50%;
-  top: 70vh;
-  transform: translateX(-50%);
-  max-width: 40ch;
-  text-align: center;
-}
-.verse--scroll .line + .line { margin-top: 55vh; }
-
-.trigger { view-timeline-name: --twenties; }
-
+/* ---------- 08  SCENE 08 — MEDALS ----------
+   The medals stay clean while the lines type (0–68% of the scroll).
+   After the last word, the splash spreads, then the medals get dirty. */
 @keyframes contaminate {
-  from { opacity: 0; filter: blur(4px) saturate(.4); }
-  to   { opacity: 1; filter: blur(0) saturate(1); }
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 .contaminate {
-  opacity: 0;
   animation: contaminate linear both;
-  animation-timeline: --twenties;
+  animation-timeline: --scene;
 }
-.contaminate.splash { animation-range: contain 12% contain 48%; }
-.contaminate.dirty  { animation-range: contain 28% contain 68%; }
+.contaminate.splash { animation-range: contain 72% contain 88%; }
+.contaminate.dirty  { animation-range: contain 80% contain 97%; }
 
 
-/* ---------- 12  SCENE 09 + 10 — ENDING ---------- */
-.scene--pause {
-  min-height: 150vh;
-  display: grid;
-  place-items: center;
-  margin-top: 0;
-}
-.scene--pause .line { letter-spacing: 0.3em; }
-
-.scene--end {
-  min-height: 100vh;
-  display: grid;
-  place-items: center;
-  margin-top: 0;
-  overflow: hidden;
-}
-.end-splash {
-  position: absolute;
-  left: 50%; top: 50%;
-  width: min(120%, 1500px);
-  transform: translate(-50%, -50%);
-  opacity: 0.22;
-  filter: saturate(.7) blur(1px);
-}
-.title {
-  position: relative;
-  font-size: clamp(16px, 1.6vw, 24px);
-  letter-spacing: 0.42em;
-  text-transform: uppercase;
-}
+/* ---------- 09  SCENE 09 — ENDING ----------
+   Hover the last line: it blurs and bleeds from white into red. */
 .title .bleed {
-  display: inline-block;
-  cursor: default;
   transition:
     color 3.2s var(--ease-physical),
-    filter 3.2s var(--ease-physical),
-    text-shadow 3.6s var(--ease-physical),
-    letter-spacing 4s var(--ease-physical);
+    filter 3.2s var(--ease-physical);
 }
 .title .bleed:hover {
   color: var(--blood);
-  filter: blur(1.6px);
-  letter-spacing: 0.5em;
-  text-shadow:
-    0 0.1em 0.3em rgb(159 29 18 / .7),
-    0 0.6em 1.4em rgb(194 65 12 / .35);
+  filter: blur(1.8px);
+  transition-duration: 3.6s;
 }
 
 
-/* ---------- 13  SOUND ---------- */
+/* ---------- 10  SOUND ---------- */
 .sound {
   position: fixed;
   left: 16px;
@@ -569,47 +403,22 @@ p, h1 { margin: 0; font-weight: 400; }
 .sound:hover, .sound:focus-visible { opacity: 0.9; }
 
 
-/* ---------- 14  FALLBACK ----------
-   Browsers without scroll-driven animations simply show everything. */
+/* ---------- 11  FALLBACK + SMALLER SCREENS ---------- */
+
+/* Browsers without scroll-driven animation: show the text at once. */
 @supports not (animation-timeline: view()) {
-  .reveal-ink, .reveal-drift, .reveal-wipe, .reveal-slow, .flowers { animation: none; }
-  .contaminate { animation: none; opacity: 1; }
+  .pinned { height: auto; }
+  .pinned .stage { position: relative; }
+  .verse .type-line { animation: none; width: auto; }
+  .contaminate { animation: none; opacity: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .typewriter { animation: none !important; }
 }
 
-
-/* ---------- 15  SMALLER SCREENS ---------- */
-@media (max-width: 900px) {
-  :root { --text-size: 12px; }
-  .verse { max-width: 30ch; }
-}
-
 @media (max-width: 640px) {
-  .scene { margin-top: 0; overflow-x: clip; }
-  /* enlarge the artwork and crop the sides so objects stay readable */
-  .art { width: 150%; margin-left: -25%; }
-  .scene--typewriter .art { width: 170%; margin-left: -35%; }
-
-  /* text leaves the picture and follows it */
-  .verse,
-  .verse--left,
-  .verse--right {
-    position: relative;
-    left: auto; top: auto;
-    max-width: none;
-    padding: 0 16px;
-    margin: -14% 0 18vh;
-  }
-  .verse--right { text-align: right; margin-top: 0; }
-  .scene--lectern .verse--left { margin-bottom: 4vh; }
-
-  .scene--medals { height: 240vh; }
-  .medals-pin .art { width: 100%; margin-left: 0; }
-  .verse--scroll { position: absolute; left: 50%; padding: 0 16px; margin: 0; width: 100%; }
-
-  .scene--end .title { letter-spacing: 0.25em; }
+  .verse { font-size: 10px; }
+  .typed { font-size: 7px; }
   .sound { width: 160px; left: 12px; bottom: 12px; }
 }
