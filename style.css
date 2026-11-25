@@ -155,6 +155,38 @@ p { margin: 0; }
 }
 
 
+/* ---------- LEFT-ANCHORED SCENES (coffin, medals) ----------
+   The picture sticks to the LEFT edge of the window (with its splash /
+   blood), the text sticks to the RIGHT edge and is right-aligned.
+   Both follow the window size.                                        */
+.scene--left .frame {
+  --artw: min(100vw, calc(100svh * var(--ratio)));   /* picture width */
+  width: 100vw;
+  height: 100svh;
+}
+.scene--left .art {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  translate: 0 -50%;
+  width: var(--artw);
+}
+.scene--left .verse {
+  left: auto;
+  right: var(--tr, 8vw);              /* distance from the right edge */
+  top: var(--ty);
+  text-align: right;
+  font-size: max(calc(var(--artw) * 0.01667), 10px);   /* = 24px at 1440 */
+}
+/* right-aligned lines keep their full width; letters are uncovered
+   left to right so the line does not shift while it types */
+.scene--left .verse .type-line {
+  width: calc(var(--chars) * 1ch + 0.1ch);
+  margin-left: auto;
+  animation-name: type-clip;
+}
+
+
 /* ---------- 03  PINNED SCENES + SCROLL TYPING ----------
    A .pinned section is taller than the screen. Its .stage sticks to the
    top while you scroll through the extra height (--scroll), and that
@@ -224,12 +256,14 @@ p { margin: 0; }
 .machine { z-index: 3; }
 .typewriter { z-index: 2; pointer-events: none; transition: filter .8s ease; }
 
-/* The paper is only visible above the roller. */
+/* The paper sits behind the typewriter: it shows under the bar and
+   through the faded bottom of the machine (as in Figma), and is only
+   cut off at the bottom edge of the typewriter. */
 .sheet-clip {
   position: absolute;
   inset: 0;
   z-index: 1;
-  clip-path: inset(-80% 0 54% 0);
+  clip-path: inset(-80% 0 16% 0);
 }
 .sheet {
   position: absolute;
