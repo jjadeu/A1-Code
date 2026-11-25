@@ -229,6 +229,32 @@ body { timeline-scope: --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g9; }
 }
 
 
+/* ---------- ZOOMED SCENE (aerodrome) ----------
+   The picture is enlarged until its left and right edges touch the
+   edges of the window (top/bottom may be cropped). The text keeps the
+   position and size it had before the zoom.                          */
+.scene--zoom .frame {
+  --fitw: min(100vw, calc(100svh * var(--ratio)));   /* size before zoom */
+  --fith: calc(var(--fitw) / (var(--ratio)));
+  width: 100vw;
+  height: 100svh;
+}
+.scene--zoom .art {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  translate: 0 -50%;
+  width: 100vw;
+}
+.scene--zoom .verse {
+  left: 50%;
+  translate: -50% 0;
+  width: calc(var(--fitw) * 0.325);
+  top: calc(50% - var(--fith) / 2 + var(--fith) * 0.8049);
+  font-size: max(calc(var(--fitw) * 0.01667), 10px);
+}
+
+
 /* ---------- LEFT-ANCHORED SCENES (coffin, medals) ----------
    The picture sticks to the LEFT edge of the window (with its splash /
    blood), the text sticks to the RIGHT edge and is right-aligned.
