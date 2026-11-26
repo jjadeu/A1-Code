@@ -227,17 +227,16 @@ body { timeline-scope: --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g9; }
   width: 100vw;
   height: 100svh;
 }
-/* The photo always fills the whole screen (like background-size: cover).
-   In the image file the photo itself is only the band from 22.4% to
-   74.8% of its height (the rest is transparent), so the band is what
-   gets scaled to cover the screen:
-   band height = image width × 0.4437, band centre = 48.6% down.       */
+/* The photo is as wide as the window: its left and right edges touch the
+   edges of the screen, and nothing is cut off at the top or bottom.
+   (In the image file the photo is the band from 22.4% to 74.8% of its
+   height; that band is centred vertically on the screen.)             */
 .scene--zoom .art {
   position: absolute;
-  left: 50%;
+  left: 0;
   top: 50%;
-  translate: -50% -48.6%;
-  width: max(100vw, calc(100svh / 0.4437));
+  translate: 0 -48.6%;
+  width: 100vw;
 }
 .edge-splash {
   position: absolute;
