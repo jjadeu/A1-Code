@@ -6,7 +6,7 @@
   <title>Army Dreamers</title>
   <meta name="description" content="An interactive poetry archive. HTML and CSS only.">
   <!-- ?v= forces browsers to load the new CSS: change the number after each edit -->
-  <link rel="stylesheet" href="style.css?v=20261126s">
+  <link rel="stylesheet" href="style.css?v=20261126t">
 </head>
 <body>
 
@@ -37,8 +37,11 @@
     <div class="stage">
       <div class="frame" style="--ratio: 1441 / 1220">
         <div class="art">
-          <img class="layer" src="assets/intro-forest.png" alt="A dark forest" style="--x:0%; --y:0%; --w:100.07%; --ar:1441/1220">
-          <img class="layer" src="assets/intro-soldier.png" alt="A soldier" style="--x:-0.14%; --y:3.85%; --w:78.47%; --ar:1130/957">
+          <!-- splash: Figma x 389, y 106 (forest at y 5), 1560 x 1321 -->
+          <img class="layer" src="assets/intro-splash.png" alt="" style="--x:27%; --y:8.28%; --w:108.24%; --ar:1559.76/1321">
+          <!-- forest + soldier pushed up 50px (of 1220) -->
+          <img class="layer" src="assets/intro-forest.png" alt="A dark forest" style="--x:0%; --y:-4.1%; --w:100.07%; --ar:1441/1220">
+          <img class="layer" src="assets/intro-soldier.png" alt="A soldier" style="--x:-0.14%; --y:-0.25%; --w:78.47%; --ar:1130/957">
         </div>
         <h1 class="intro-title"><span class="ink">ARMY DREAMERS</span></h1>
         <p class="intro-by"><span class="ink">- Kate Bush</span></p>
@@ -92,8 +95,8 @@
     <div class="stage">
       <div class="frame" style="--ratio: 1440 / 1219">
         <div class="art">
-          <img class="layer" src="assets/flower-splash.png" alt="" style="--x:-11.7%; --y:4.8%; --w:100%">
-          <img class="layer" src="assets/flowers.png" alt="A bunch of flowers" style="--x:30.14%; --y:17.17%; --w:67.44%; --ar:971.15/859.04">
+          <img class="layer" src="assets/flower-splash.png" alt="" style="--x:-7.7%; --y:4.8%; --w:100%">
+          <img class="layer" src="assets/flowers.png" alt="A bunch of flowers" style="--x:34.14%; --y:17.17%; --w:67.44%; --ar:971.15/859.04">
         </div>
         <div class="verse" style="--tx:12.57%; --ty:33.72%">
           <span class="type-line" style="--chars: 30; --from: 6%;  --to: 44%"><span class="ink">I've a bunch of purple flowers</span></span>
@@ -243,11 +246,11 @@
     <div class="stage">
       <div class="frame" style="--ratio: 1440 / 1220">
         <div class="art">
-          <img class="layer" src="assets/lectern-splash.png" alt="" style="--x:0%; --y:0%; --w:100%">
-          <img class="layer" src="assets/lectern.png" alt="An empty lectern" style="--x:4.58%; --y:4.59%; --w:90.83%; --ar:1308/1108">
+          <img class="layer" src="assets/lectern-splash.png" alt="" style="--x:-0.85%; --y:-6.2%; --w:100%">
+          <img class="layer" src="assets/lectern.png" alt="An empty lectern" style="--x:3.73%; --y:-1.61%; --w:90.83%; --ar:1308/1108">
         </div>
         <!-- In Figma this line wraps in two: words 1–5, then the rest -->
-        <div class="verse verse--center" style="--tx:37.71%; --ty:90.8%; --bw:24.65%">
+        <div class="verse verse--center" style="--tx:36.86%; --ty:84.6%; --bw:24.65%">
           <span class="type-line" style="--chars: 16; --from: 10%; --to: 48%"><span class="ink">But he never had</span></span>
           <span class="type-line" style="--chars: 18; --from: 52%; --to: 90%"><span class="ink">a proper education</span></span>
         </div>

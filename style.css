@@ -322,9 +322,13 @@ body { timeline-scope: --g0, --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g
 /* the bottom of the picture melts into the page background: the scene
    fades to transparent towards the bottom edge (no hard line). */
 .scene--typewriter .stage {
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 58%, rgb(0 0 0 / .55) 76%, transparent 96%);
-          mask-image: linear-gradient(to bottom, #000 0%, #000 58%, rgb(0 0 0 / .55) 76%, transparent 96%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 14%, #000 58%, rgb(0 0 0 / .55) 76%, transparent 96%);
+          mask-image: linear-gradient(to bottom, transparent 0%, #000 14%, #000 58%, rgb(0 0 0 / .55) 76%, transparent 96%);
 }
+/* the empty space between the intro title and the paper is cut in half:
+   gap = (rest of the intro under "- Kate Bush", 31.6vw) + 28svh.
+   The scene slides up over the end of the intro; its top edge fades. */
+.scene--typewriter { margin-top: calc(-0.5 * (31.6vw + var(--tw-paper))); }
 
 /* ---------- AERODROME SCENE ----------
    The photo always fits inside the window (centred, never cropped).
