@@ -66,6 +66,18 @@
 
   --glow-strength: 3.4;    /* scene light: 1 = soft, 3+ = strong */
   --dark-strength: .62;    /* darkness around the light: 0 = none, 1 = black */
+
+  /* PAGE MARGIN (M) — one rule for every poem line.
+     Reference: the "rock star" question pair, 13.47% of the page width
+     from the left edge. Left-aligned text starts at M from the left edge,
+     right-aligned text ends at M from the right edge, centred text is
+     centred on the page. cqw = % of the page width (main.archive is the
+     size container), so M scales with the window.                      */
+  --M: 13.47cqw;
+  /* the same margin, measured inside a centred picture frame:
+     M minus the space between the page edge and the frame edge
+     (100% = the frame's width when used in left / right)               */
+  --edge: calc(var(--M) - (100cqw - 100%) / 2);
 }
 
 
@@ -118,9 +130,13 @@ p { margin: 0; }
   position: relative;
   /* as large as possible without cropping: limited by the window width or
      height, whichever comes first (viewport units only, no breakpoints) */
-  width: min(100vw, calc(100svh * var(--ratio)));
-  container-type: inline-size;          /* text sizes follow the frame */
+  width: min(100cqw, calc(100svh * var(--ratio)));   /* 100cqw = page width */
 }
+/* the page is the size container, so text sizes (cqw) and the margin M
+   follow the page width. Only the typewriter keeps its own container:
+   the typed text on the paper follows the (zoomed) machine.          */
+.archive { container-type: inline-size; }
+.scene--typewriter .frame { container-type: inline-size; }
 
 .art {
   position: relative;
@@ -153,10 +169,13 @@ p { margin: 0; }
 /* Figma "soft light" blend (add class="soft-light" to an image). */
 .soft-light { mix-blend-mode: soft-light; }
 
-/* A text box, placed like the Figma text box (--tx, --ty). */
+/* A text box. Height: --ty (Figma y, % of the frame).
+   Across: left-aligned at the page margin M (default),
+   .verse--right = right-aligned at M from the right edge,
+   .verse--center = centred on the page.                     */
 .verse {
   position: absolute;
-  left: var(--tx);
+  left: var(--edge);
   top: var(--ty);
   z-index: 5;
   font-size: max(var(--text-size), 11px);   /* same size in every scene */
@@ -244,17 +263,16 @@ body { timeline-scope: --g0, --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g
 
 
 /* ---------- INTRO SCENE ----------
-   Forest + soldier, and the title placed like the Figma text boxes
-   (right-aligned, right edges at x 1342 / 1337 of 1440).             */
+   Forest + soldier, and the title: right-aligned at the page margin M. */
 .intro-title, .intro-by {
   position: absolute;
   margin: 0;
   z-index: 5;
+  right: var(--edge);
   text-align: right;
   font-weight: 400;
 }
 .intro-title {
-  right: 6.81%;
   top: 52.62%;                         /* Figma 677px, moved up 30px */
   font-family: "Lexend Tera", var(--font);
   font-size: 4.444cqw;                 /* = 64px on the 1440px frame */
@@ -262,7 +280,6 @@ body { timeline-scope: --g0, --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g
   letter-spacing: 0;
 }
 .intro-by {
-  right: 7.15%;
   top: 58.52%;
   font-size: max(var(--text-size), 11px);
   line-height: 1.3;
@@ -281,12 +298,12 @@ body { timeline-scope: --g0, --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g
 
 /* ---------- QUESTION LINES BETWEEN SCENES ----------
    "(What could he do?) …" sit in the gaps between scenes, already there
-   (no typing). --ix = distance from the left edge (Figma x).            */
+   (no typing). The left pair sets the page margin M.                  */
 .interlude { position: relative; z-index: 1; padding: 20vh 0; }
 .interlude .verse {
   position: relative;
   left: auto; top: auto;
-  margin-left: var(--ix, 0);
+  margin-left: var(--M);        /* THE reference for the margin */
   width: fit-content;
 }
 .interlude--center .verse { margin-inline: auto; text-align: center; translate: 0 -0.69vw; }   /* politician pair: 10px higher */
@@ -294,7 +311,7 @@ body { timeline-scope: --g0, --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g
 
 /* ---------- INTRO: forest from edge to edge, soldier + title follow it */
 .scene--intro .stage { height: auto; }
-.scene--intro .frame { width: 100vw; }
+.scene--intro .frame { width: 100cqw; }
 
 /* ---------- BIGGER PICTURES ----------
    --art-scale enlarges a scene's picture (and its splash) around its
@@ -350,7 +367,7 @@ body { timeline-scope: --g0, --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g
 .scene--zoom .frame {
   --fitw: min(100vw, calc(100svh * var(--ratio)));   /* photo width  */
   --fith: calc(var(--fitw) / (var(--ratio)));         /* photo height */
-  width: 100vw;
+  width: 100cqw;
   height: 100svh;
 }
 /* The photo is as wide as the window: its left and right edges touch the
@@ -376,9 +393,6 @@ body { timeline-scope: --g0, --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g
 .edge-splash--left  { left: 0; }
 .edge-splash--right { right: 0; }
 .scene--zoom .verse {
-  left: 50%;
-  translate: -50% 0;
-  width: calc(var(--fitw) * 0.325);
   top: calc(50% - var(--fith) / 2 + var(--fith) * 0.782);
 }
 
@@ -389,7 +403,7 @@ body { timeline-scope: --g0, --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g
    Both follow the window size.                                        */
 .scene--left .frame {
   --artw: min(100vw, calc(100svh * var(--ratio)));   /* picture width */
-  width: 100vw;
+  width: 100cqw;
   height: 100svh;
 }
 .scene--left .art {
@@ -399,12 +413,7 @@ body { timeline-scope: --g0, --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g
   translate: 0 -50%;
   width: var(--artw);
 }
-.scene--left .verse {
-  left: auto;
-  right: var(--tr, 8vw);              /* distance from the right edge */
-  top: var(--ty);
-  text-align: right;
-}
+/* the text is .verse--right: its right edge sits at the page margin M */
 /* right-aligned lines keep their full width; letters are uncovered
    left to right so the line does not shift while it types */
 .scene--left .verse .type-line {
@@ -458,7 +467,17 @@ body { timeline-scope: --g0, --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g
 }
 
 /* Centred text box (scene 03). */
-.verse--center { width: var(--bw); text-align: center; }
+.verse--center {
+  left: 50%;                    /* every frame is centred on the page */
+  translate: -50% 0;
+  width: max-content;
+  text-align: center;
+}
+.verse--right {
+  left: auto;
+  right: var(--edge);
+  text-align: right;
+}
 .verse--center .type-line {
   width: calc(var(--chars) * 1ch + 0.1ch);
   margin-inline: auto;
@@ -870,10 +889,10 @@ body { timeline-scope: --g0, --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g
    152.15vw = frame height (2191 / 1440), 61.84% = last line's Figma y.  */
 .scene--finale::after { content: ""; display: block; height: 2px; }   /* the 2px of room */
 .scene--finale .frame {
-  width: 100vw;
+  width: 100cqw;                  /* the full page width */
   position: sticky;
-  top: calc(70svh - 0.6184 * 152.15vw);
-  container-type: inline-size scroll-state;
+  top: calc(70svh - 0.6184 * 152.15cqw);
+  container-type: scroll-state;
 }
 
 @keyframes appear-now { from { opacity: 0; } to { opacity: 1; } }
