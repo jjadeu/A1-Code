@@ -221,8 +221,8 @@ body { timeline-scope: --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g9; }
 
 /* ---------- TYPEWRITER SCENE (zoomed in) ----------
    The scene is enlarged so the typewriter fills most of the width; the
-   bottom of the machine runs off the screen and the cut is hidden by a
-   soft blur that grows towards the bottom edge.
+   bottom of the machine runs off the screen and fades softly into the
+   page background.
    --tw-zoom : width of the scene picture (1.45 = 145% of the window)
    --tw-paper: where the top of the paper sits (from the top of the screen) */
 .scene--typewriter { --tw-zoom: 1.3; --tw-paper: 28svh; }
@@ -235,17 +235,11 @@ body { timeline-scope: --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g9; }
   /* paper top = 23.34% of the picture height; picture height = width / 1.1736 */
   top: calc(var(--tw-paper) - 0.2334 * 100vw * var(--tw-zoom) / 1.1736);
 }
-.scene--typewriter .stage::after {
-  content: "";
-  position: absolute;
-  left: 0; right: 0; bottom: 0;
-  height: 24%;
-  z-index: 6;
-  pointer-events: none;
-  backdrop-filter: blur(14px);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 75%);
-          mask-image: linear-gradient(to bottom, transparent 0%, #000 75%);
-  background: linear-gradient(to bottom, transparent 0%, rgb(35 37 31 / .55) 100%);
+/* the bottom of the picture melts into the page background: the scene
+   fades to transparent towards the bottom edge (no hard line). */
+.scene--typewriter .stage {
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 58%, rgb(0 0 0 / .55) 76%, transparent 96%);
+          mask-image: linear-gradient(to bottom, #000 0%, #000 58%, rgb(0 0 0 / .55) 76%, transparent 96%);
 }
 
 /* ---------- AERODROME SCENE ----------
