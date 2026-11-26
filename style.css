@@ -341,6 +341,12 @@ body { timeline-scope: --g0, --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g
    The two splashes are the same scale as the photo, but stick to the
    LEFT and RIGHT edges of the window. The text sits under the photo,
    centred, at its Figma position.                                     */
+/* the top of the photo is cut by the screen: that edge melts softly into
+   the page background (like the bottom of the typewriter) */
+.scene--zoom .stage {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgb(0 0 0 / .45) 12%, #000 30%);
+          mask-image: linear-gradient(to bottom, transparent 0%, rgb(0 0 0 / .45) 12%, #000 30%);
+}
 .scene--zoom .frame {
   --fitw: min(100vw, calc(100svh * var(--ratio)));   /* photo width  */
   --fith: calc(var(--fitw) / (var(--ratio)));         /* photo height */

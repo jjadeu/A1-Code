@@ -6,7 +6,7 @@
   <title>Army Dreamers</title>
   <meta name="description" content="An interactive poetry archive. HTML and CSS only.">
   <!-- ?v= forces browsers to load the new CSS: change the number after each edit -->
-  <link rel="stylesheet" href="style.css?v=20261126u">
+  <link rel="stylesheet" href="style.css?v=20261126v">
 </head>
 <body>
 
@@ -14,7 +14,7 @@
      dark film edges (on top). Each patch fades in with its scene and out
      as the next scene arrives, so the light merges from scene to scene.
      --gx / --gy = centre of the light (% of the window)
-     --gs = size of the light, --ga = strength (0–1)                      -->
+     --gs = size of the light, --ga = strength (0â€“1)                      -->
 <div class="atmosphere" aria-hidden="true">
   <div class="glow" style="--gx:40%; --gy:46%; --gs:44vw 48vh; --ga:.26"></div> <!-- 0 intro -->
   <div class="glow" style="--gx:50%; --gy:46%; --gs:42vw 46vh; --ga:.30"></div> <!-- 1 typewriter -->
@@ -30,7 +30,7 @@
 
 <main class="archive">
 
-  <!-- ===================== SCENE 00 — INTRO =====================
+  <!-- ===================== SCENE 00 â€” INTRO =====================
        Forest, the soldier, and the title. (Figma frame 1441 x 1220.) -->
   <section class="scene scene--intro" aria-label="Intro">
     <div class="stage">
@@ -49,7 +49,7 @@
   </section>
 
 
-  <!-- ===================== SCENE 01 — TYPEWRITER =====================       Types by itself when the page opens. Clicking the typewriter
+  <!-- ===================== SCENE 01 â€” TYPEWRITER =====================       Types by itself when the page opens. Clicking the typewriter
        pulls the sheet out and types a new one.                        -->
   <section class="scene scene--typewriter" aria-label="Scene one">
     <input class="sheet-state" type="radio" name="sheet" id="sheet-0" checked>
@@ -89,7 +89,7 @@
   </section>
 
 
-  <!-- ===================== SCENE 02 — FLOWERS ===================== -->
+  <!-- ===================== SCENE 02 â€” FLOWERS ===================== -->
   <section class="scene pinned scene--flowers" aria-label="Scene two" style="--scroll: 150vh">
     <div class="stage">
       <div class="frame" style="--ratio: 1440 / 1219">
@@ -106,7 +106,7 @@
   </section>
 
 
-  <!-- ===================== SCENE 03 — AERODROME ===================== -->
+  <!-- ===================== SCENE 03 â€” AERODROME ===================== -->
   <section class="scene pinned scene--zoom" aria-label="Scene three" style="--scroll: 150vh">
     <div class="stage">
       <!-- The photo always fits the window; the two splashes stick to the
@@ -126,7 +126,7 @@
   </section>
 
 
-  <!-- ===================== SCENE 04 — FOUR MEN ===================== -->
+  <!-- ===================== SCENE 04 â€” FOUR MEN ===================== -->
   <section class="scene pinned scene--left scene--coffin" aria-label="Scene four" style="--scroll: 150vh">
     <div class="stage">
       <div class="frame" style="--ratio: 1440 / 1221">
@@ -143,7 +143,7 @@
   </section>
 
 
-  <!-- ===================== SCENE 05 — BELONGINGS =====================
+  <!-- ===================== SCENE 05 â€” BELONGINGS =====================
        The only scene you can scroll past freely.                       -->
   <section class="scene scene--belongings" aria-label="Scene five: belongings">
     <!-- Hidden inputs that remember what the visitor has done -->
@@ -212,7 +212,7 @@
   </div>
 
 
-  <!-- ===================== SCENE 06 — GUITAR / GUN =====================
+  <!-- ===================== SCENE 06 â€” GUITAR / GUN =====================
        Hover the guitar: it fades out and the gun fades in.             -->
   <section class="scene pinned" aria-label="Scene six" style="--scroll: 210vh">
     <div class="stage">
@@ -240,7 +240,7 @@
   </div>
 
 
-  <!-- ===================== SCENE 07 — LECTERN (split) ===================== -->
+  <!-- ===================== SCENE 07 â€” LECTERN (split) ===================== -->
   <section class="scene pinned" aria-label="Scene seven" style="--scroll: 210vh">
     <div class="stage">
       <div class="frame" style="--ratio: 1440 / 1220">
@@ -248,7 +248,7 @@
           <img class="layer" src="assets/lectern-splash.png" alt="" style="--x:-0.85%; --y:-6.2%; --w:100%">
           <img class="layer" src="assets/lectern.png" alt="An empty lectern" style="--x:3.73%; --y:-1.61%; --w:90.83%; --ar:1308/1108">
         </div>
-        <!-- In Figma this line wraps in two: words 1–5, then the rest -->
+        <!-- In Figma this line wraps in two: words 1â€“5, then the rest -->
         <div class="verse verse--center" style="--tx:36.86%; --ty:84.6%; --bw:24.65%">
           <span class="type-line" style="--chars: 16; --from: 10%; --to: 48%"><span class="ink">But he never had</span></span>
           <span class="type-line" style="--chars: 18; --from: 52%; --to: 90%"><span class="ink">a proper education</span></span>
@@ -258,7 +258,7 @@
   </section>
 
 
-<!-- ===================== SCENE 08 â€” MEDALS + ENDING =====================
+<!-- ===================== SCENE 08 Ã¢â‚¬â€ MEDALS + ENDING =====================
        One still page, laid out like Figma (from y 8540 to 10731, 1440 wide).
        The medals are as wide as the window (like the aerodrome photo).
        The blood appears once the last line reaches the lower part of the
