@@ -6,7 +6,7 @@
   <title>Army Dreamers</title>
   <meta name="description" content="An interactive poetry archive. HTML and CSS only.">
   <!-- ?v= forces browsers to load the new CSS: change the number after each edit -->
-  <link rel="stylesheet" href="style.css?v=20261126o">
+  <link rel="stylesheet" href="style.css?v=20261126q">
 </head>
 <body>
 
@@ -18,7 +18,7 @@
 <div class="atmosphere" aria-hidden="true">
   <div class="glow" style="--gx:40%; --gy:46%; --gs:44vw 48vh; --ga:.26"></div> <!-- 0 intro -->
   <div class="glow" style="--gx:50%; --gy:46%; --gs:42vw 46vh; --ga:.30"></div> <!-- 1 typewriter -->
-  <div class="glow" style="--gx:64%; --gy:48%; --gs:38vw 44vh; --ga:.26"></div> <!-- 2 flowers -->
+  <div class="glow" style="--gx:49.5%; --gy:42%; --gs:40vw 46vh; --ga:.26"></div> <!-- 2 flowers -->
   <div class="glow" style="--gx:50%; --gy:40%; --gs:50vw 42vh; --ga:.24"></div> <!-- 3 aerodrome -->
   <div class="glow" style="--gx:26%; --gy:52%; --gs:36vw 46vh; --ga:.28"></div> <!-- 4 coffin (left) -->
   <div class="glow" style="--gx:52%; --gy:50%; --gs:46vw 48vh; --ga:.24"></div> <!-- 5 belongings -->
@@ -256,16 +256,7 @@
   </section>
 
 
-  <!-- between scenes: already visible, no typing -->
-  <div class="interlude interlude--left" style="--ix:5.56%">
-    <div class="verse">
-          <span class="type-line" style="--chars: 19; --from: 4%;  --to: 18%"><span class="ink">(What could he do?)</span></span>
-          <span class="type-line" style="--chars: 27; --from: 22%; --to: 40%"><span class="ink">(Should have been a father)</span></span>
-        </div>
-  </div>
-
-
-  <!-- ===================== SCENE 08 — MEDALS =====================
+<!-- ===================== SCENE 08 — MEDALS =====================
        Clean while the lines type. Once the last line is finished,
        the splash spreads and the medals turn dirty.                  -->
   <section class="scene pinned scene--medals scene--left" aria-label="Scene eight" style="--scroll: 210vh">
@@ -276,8 +267,13 @@
           <img class="layer contaminate splash" src="assets/medal-splash.png" alt="" style="--x:0%; --y:0%; --w:100%">
           <img class="layer contaminate dirty" src="assets/medals-dirty.png" alt="" style="--x:0%; --y:0.04%; --w:100%">
         </div>
+        <!-- already visible (no typing) -->
+        <div class="verse verse--static verse--pair">
+          <span class="type-line" style="--chars: 19; --from: 4%;  --to: 18%"><span class="ink">(What could he do?)</span></span>
+          <span class="type-line" style="--chars: 27; --from: 22%; --to: 40%"><span class="ink">(Should have been a father)</span></span>
+        </div>
         <!-- In Figma this line wraps in two: words 1–6, then the rest -->
-        <div class="verse" style="--tx:5.56%; --ty:57.03%">
+        <div class="verse verse--last" style="--tx:5.56%; --ty:57.03%">
           <span class="type-line" style="--chars: 25; --from: 10%; --to: 38%"><span class="ink">But he never even made it</span></span>
           <span class="type-line" style="--chars: 12; --from: 42%; --to: 68%"><span class="ink">his twenties</span></span>
         </div>
@@ -298,8 +294,12 @@
       <div class="latch-text">
         <div class="frame" style="--ratio: 1440 / 1606">
           <div class="art"></div>
+        <div class="verse verse--static verse--pair" aria-hidden="true">
+          <span class="type-line" style="--chars: 19; --from: 4%;  --to: 18%"><span class="ink">(What could he do?)</span></span>
+          <span class="type-line" style="--chars: 27; --from: 22%; --to: 40%"><span class="ink">(Should have been a father)</span></span>
+        </div>
         <!-- In Figma this line wraps in two: words 1–6, then the rest -->
-        <div class="verse" aria-hidden="true" style="--tx:5.56%; --ty:57.03%">
+        <div class="verse verse--last" aria-hidden="true" style="--tx:5.56%; --ty:57.03%">
           <span class="type-line" style="--chars: 25; --from: 10%; --to: 38%"><span class="ink">But he never even made it</span></span>
           <span class="type-line" style="--chars: 12; --from: 42%; --to: 68%"><span class="ink">his twenties</span></span>
         </div>
