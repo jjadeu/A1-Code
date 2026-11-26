@@ -88,8 +88,8 @@ p { margin: 0; }
 
 /* ---------- 02  SCENES, STAGE, FRAME, LAYERS ----------
    .stage  = one screen (100vh), the picture is centred in it
-   .frame  = the Figma frame, always 100vw wide: every picture is a fixed
-             fraction of the window width (e.g. 20% of the frame = 20vw)
+   .frame  = the Figma frame, scaled with the window (vw / svh) so the
+             whole picture always fits: never cropped, never fixed px
    .art    = the pictures, layered
    .layer  = one picture, placed with Figma numbers:
              --x (left) --y (top) --w (width), in % of the frame        */
@@ -105,7 +105,9 @@ p { margin: 0; }
 
 .frame {
   position: relative;
-  width: 100vw;   /* always the same fraction of the window width */
+  /* as large as possible without cropping: limited by the window width or
+     height, whichever comes first (viewport units only, no breakpoints) */
+  width: min(100vw, calc(100svh * var(--ratio)));
   container-type: inline-size;          /* text sizes follow the frame */
 }
 
@@ -223,7 +225,7 @@ body { timeline-scope: --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g9; }
    LEFT and RIGHT edges of the window. The text sits under the photo,
    centred, at its Figma position.                                     */
 .scene--zoom .frame {
-  --fitw: 100vw;                                       /* photo width  */
+  --fitw: min(100vw, calc(100svh * var(--ratio)));   /* photo width  */
   --fith: calc(var(--fitw) / (var(--ratio)));         /* photo height */
   width: 100vw;
   height: 100svh;
@@ -237,7 +239,7 @@ body { timeline-scope: --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g9; }
   left: 0;
   top: 50%;
   translate: 0 -48.6%;
-  width: 100vw;
+  width: min(100vw, calc(100svh / 0.4437));   /* full width, unless the window is too short */
 }
 .edge-splash {
   position: absolute;
@@ -263,7 +265,7 @@ body { timeline-scope: --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g9; }
    blood), the text sticks to the RIGHT edge and is right-aligned.
    Both follow the window size.                                        */
 .scene--left .frame {
-  --artw: 100vw;                                       /* picture width */
+  --artw: min(100vw, calc(100svh * var(--ratio)));   /* picture width */
   width: 100vw;
   height: 100svh;
 }
