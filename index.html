@@ -130,13 +130,6 @@
     <!-- Hidden inputs that remember what the visitor has done -->
     <input class="state" type="checkbox" id="necklace-open">
     <input class="state" type="checkbox" id="tin-open">
-    <input class="state" type="radio" name="rock1" id="rock1-in" checked>
-    <input class="state" type="radio" name="rock1" id="rock1-a">
-    <input class="state" type="radio" name="rock1" id="rock1-b">
-    <input class="state" type="radio" name="rock2" id="rock2-in" checked>
-    <input class="state" type="radio" name="rock2" id="rock2-a">
-    <input class="state" type="radio" name="rock2" id="rock2-b">
-    <input class="state" type="checkbox" id="pen-on">
 
     <div class="stage">
       <!-- Layout = Figma (frame 1440 x 1500, starting at y 4400) -->
@@ -163,31 +156,25 @@
 
           <div class="rock rock--1" style="--in-x:56.13%; --in-y:36.52%; --a-x:88%; --a-y:10%; --b-x:5%; --b-y:91%; --w:9.92%">
             <img src="assets/rock-1-crop.png" alt="A stone">
-            <label for="rock1-a" class="rock__go go--in"><span class="sr-only">Take the stone out</span></label>
-            <label for="rock1-b" class="rock__go go--a"><span class="sr-only">Move the stone</span></label>
-            <label for="rock1-in" class="rock__go go--b"><span class="sr-only">Put the stone back</span></label>
           </div>
           <div class="rock rock--2" style="--in-x:50.35%; --in-y:30.93%; --a-x:92%; --a-y:27%; --b-x:14%; --b-y:88%; --w:11.69%">
             <img src="assets/rock-2-crop.png" alt="A stone">
-            <label for="rock2-a" class="rock__go go--in"><span class="sr-only">Take the stone out</span></label>
-            <label for="rock2-b" class="rock__go go--a"><span class="sr-only">Move the stone</span></label>
-            <label for="rock2-in" class="rock__go go--b"><span class="sr-only">Put the stone back</span></label>
           </div>
 
           <div class="layer tin-lid" style="--x:33.75%; --y:5.62%; --w:71.73%; --ar:1032.89/876.18">
             <img src="assets/tin2-lid.png" alt="">
           </div>
-          <label class="tin__hit" for="tin-open"><span class="sr-only">Open or close the tin</span></label>
+          <span class="tin__hit" role="button" tabindex="0" aria-label="Tin box: click to open or close, hold to shake"></span>
 
           <!-- NECKLACE: click the locket to open / close it -->
           <img class="layer necklace necklace--open"   src="assets/necklace-open.png"   alt="An open locket" style="--x:2.78%; --y:19.8%; --w:70.42%; --ar:1014/859">
           <img class="layer necklace necklace--closed" src="assets/necklace-closed.png" alt="A closed locket" style="--x:2.78%; --y:19.73%; --w:70.42%; --ar:1014/859">
           <label class="necklace__hit" for="necklace-open"><span class="sr-only">Open or close the locket</span></label>
 
-          <!-- PEN: click it to put it on the letter -->
+          <!-- PEN: drag it onto the letter to write -->
           <div class="layer pen" style="--x:17.18%; --y:47.47%; --w:58.32%; --ar:839.78/787.49">
             <img src="assets/pen.png" alt="A fountain pen">
-            <label class="pen__hit" for="pen-on"><span class="sr-only">Write with the pen</span></label>
+            <span class="pen__hit" aria-label="Drag the pen onto the letter"></span>
           </div>
         </div>
       </div>
@@ -306,8 +293,13 @@
 
 </main>
 
+<!-- Rattle of the stones when the closed tin is shaken (add assets/rattle.mp3) -->
+<audio id="rattle-sound" src="assets/rattle.mp3" preload="auto" loop></audio>
+
 <!-- Sound (assignment requirement). Put an mp3 at assets/sound.mp3. -->
 <audio class="sound" controls loop preload="none" src="assets/sound.mp3" aria-label="Sound"></audio>
 
+<!-- The only JavaScript on the page: dragging, the tin, the pen. -->
+<script src="interactions.js" defer></script>
 </body>
 </html>

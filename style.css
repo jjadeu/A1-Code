@@ -568,11 +568,11 @@ body { timeline-scope: --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g9; }
 .scene--belongings .stage { height: auto; overflow: hidden; }
 .scene--belongings .frame { width: 100vw; }
 /* pictures and their boxes ignore the mouse; only the click / hover
-   areas (…__hit, .rock__go) react */
+   areas (…__hit) and the stones react */
 .scene--belongings .art img,
 .scene--belongings .layer,
 .scene--belongings .rock { pointer-events: none; }
-.photo__hit, .letter__hit, .tin__hit, .necklace__hit, .pen__hit, .rock__go { pointer-events: auto; }
+.photo__hit, .letter__hit, .tin__hit, .necklace__hit, .pen__hit { pointer-events: auto; }
 
 .state {
   position: fixed; top: 50%; left: 0;
@@ -581,29 +581,29 @@ body { timeline-scope: --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g9; }
 }
 
 /* the clickable / hover areas sit above the pictures */
-.photo__hit, .letter__hit, .tin__hit, .necklace__hit, .pen__hit, .rock__go {
+.photo__hit, .letter__hit, .tin__hit, .necklace__hit, .pen__hit {
   position: absolute;
   z-index: 20;
 }
 
-/* --- PHOTO: hover = it rocks left and right, like turning it in your hand */
-.photo { z-index: 1; transform-origin: 50% 40%; }
-.photo > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.photo__hit { left: 24%; top: 5%; width: 52%; height: 90%; cursor: grab; }
-@keyframes rock-photo {
-  0%, 100% { rotate: var(--rot); }
-  25%      { rotate: calc(var(--rot) - 5deg); }
-  75%      { rotate: calc(var(--rot) + 4deg); }
+/* --- PHOTO: hover = it tilts a little, and turns back when the mouse leaves */
+.photo {
+  z-index: 1;
+  transform-origin: 50% 40%;
+  transition: rotate .6s var(--ease-physical);
 }
-.photo:has(.photo__hit:hover) { animation: rock-photo 1.6s ease-in-out infinite; }
+.photo > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.photo__hit { left: 24%; top: 5%; width: 52%; height: 90%; }
+.photo:has(.photo__hit:hover) { rotate: calc(var(--rot) - 4deg); }
 
-/* --- LETTERS: 1 is shown first. The pen makes "i'm here" appear (2);
-   touching the letter afterwards smudges it (3).                      */
+/* --- LETTERS: 1 is shown first. Dropping the pen on the letter writes
+   "i'm here" (2) — interactions.js adds .is-written. After that, touching
+   the letter smudges it for good (3) — .is-smudged.                   */
 .letter { z-index: 2; transition: opacity .6s ease; }
 .letter--2, .letter--3 { opacity: 0; }
 .letter__hit { left: 49%; top: 55%; width: 41%; height: 30%; z-index: 9; }
-.scene--belongings:has(#pen-on:checked) .letter--2 { opacity: 1; transition-duration: 1.4s; }
-.scene--belongings:has(#pen-on:checked):has(.letter__hit:hover) .letter--3 { opacity: 1; transition-duration: .35s; }
+.scene--belongings.is-written .letter--2 { opacity: 1; transition-duration: 1.4s; }
+.scene--belongings.is-smudged .letter--3 { opacity: 1; transition-duration: .35s; }
 
 /* --- TIN */
 .tin-body { z-index: 3; }
@@ -626,13 +626,12 @@ body { timeline-scope: --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g9; }
 /* open: lid where it lies in Figma */
 .scene--belongings:has(#tin-open:checked) .tin-lid { transform: none; }
 
-/* click area: on the closed box / on the lid when open */
+/* click = open / close, hold = shake (interactions.js) */
 .tin__hit { left: 47%; top: 29%; width: 29%; height: 22%; cursor: pointer; }
-.scene--belongings:has(#tin-open:checked) .tin__hit { left: 60%; top: 26%; width: 22%; height: 15%; }
+.scene--belongings:has(#tin-open:checked) .tin__hit { left: 60%; top: 26%; width: 22%; height: 12%; }
 
-/* SHAKE: hover the closed box to shake it.
-   With a stone inside it rattles; empty, it only sways.
-   (A sound can't be triggered with HTML/CSS only.)                    */
+/* SHAKE while the mouse is held on the closed box (.is-shaking).
+   With a stone inside it rattles (.has-stones); empty it only sways.  */
 @keyframes rattle {
   0%, 100% { translate: 0 0;   rotate: 0deg; }
   10% { translate: -3px 1px;  rotate: -1.2deg; }
@@ -649,38 +648,24 @@ body { timeline-scope: --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g9; }
   0%, 100% { rotate: 0deg; }
   50%      { rotate: 1.5deg; }
 }
-.scene--belongings:not(:has(#tin-open:checked)):has(.tin__hit:hover):has(#rock1-in:checked, #rock2-in:checked) :is(.tin-body, .tin-lid) {
-  animation: rattle .45s linear infinite;
-}
-.scene--belongings:not(:has(#tin-open:checked)):has(.tin__hit:hover):not(:has(#rock1-in:checked, #rock2-in:checked)) :is(.tin-body, .tin-lid) {
-  animation: sway 1.2s ease-in-out infinite;
-}
+.scene--belongings.is-shaking.has-stones :is(.tin-body, .tin-lid) { animation: rattle .4s linear infinite; }
+.scene--belongings.is-shaking:not(.has-stones) :is(.tin-body, .tin-lid) { animation: sway 1.1s ease-in-out infinite; }
 
-/* --- STONES: inside the box they sit where Figma puts them. With the box
-   open, click a stone to take it out; click again to move it to another
-   spot; a third click puts it back in the box.                        */
+/* --- STONES: drag them anywhere. Dropped inside the box they stay under
+   the lid (.in-box); elsewhere they lie on top of everything.         */
 .rock {
   position: absolute;
   left: var(--in-x); top: var(--in-y); width: var(--w);
-  z-index: 4;                       /* under the lid while inside */
-  transition: left .9s var(--ease-physical), top .9s var(--ease-physical);
+  z-index: 12;
+  pointer-events: auto !important;
+  cursor: grab;
+  touch-action: none;
 }
+.rock.in-box { z-index: 4; }                 /* under the lid */
+.rock.is-dragging { z-index: 40; cursor: grabbing; }
 .rock > img { width: 100%; height: auto; }
-.rock__go { inset: 0; display: none; cursor: grab; }
-
-#rock1-a:checked ~ .stage .rock--1, #rock2-a:checked ~ .stage .rock--2 { left: var(--a-x); top: var(--a-y); z-index: 12; }
-#rock1-b:checked ~ .stage .rock--1, #rock2-b:checked ~ .stage .rock--2 { left: var(--b-x); top: var(--b-y); z-index: 12; }
-
-/* which click target each stone shows */
-#tin-open:checked ~ #rock1-in:checked ~ .stage .rock--1 .go--in,
-#tin-open:checked ~ #rock2-in:checked ~ .stage .rock--2 .go--in,
-#rock1-a:checked ~ .stage .rock--1 .go--a, #rock2-a:checked ~ .stage .rock--2 .go--a,
-#rock1-b:checked ~ .stage .rock--1 .go--b, #rock2-b:checked ~ .stage .rock--2 .go--b { display: block; }
-/* a stone outside can only go back in while the box is open */
-#rock1-b:checked ~ .stage .rock--1 .go--b,
-#rock2-b:checked ~ .stage .rock--2 .go--b { display: none; }
-.scene--belongings:has(#tin-open:checked) #rock1-b:checked ~ .stage .rock--1 .go--b,
-.scene--belongings:has(#tin-open:checked) #rock2-b:checked ~ .stage .rock--2 .go--b { display: block; }
+/* stones inside a closed box can't be reached */
+.scene--belongings:not(:has(#tin-open:checked)) .rock.in-box { pointer-events: none !important; }
 
 /* --- NECKLACE: closed first; click the locket to open, again to close */
 .necklace { z-index: 10; transition: opacity .35s ease; }
@@ -689,17 +674,13 @@ body { timeline-scope: --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g9; }
 .scene--belongings:has(#necklace-open:checked) .necklace--closed { opacity: 0; }
 .necklace__hit { left: 41%; top: 47%; width: 12%; height: 12%; cursor: pointer; }
 
-/* --- PEN: click it and it is put on the letter, nib on the empty line */
-.pen {
-  z-index: 11;
-  transform-origin: 15% 40.4%;        /* the nib */
-  transition: transform 1.2s var(--ease-physical);
-}
+/* --- PEN: drag it anywhere; drop the nib on the letter to write */
+.pen { z-index: 11; }
+.pen.is-dragging { z-index: 40; }
 .pen > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 /* a thin strip along the pen (nib 15%/40%, end 84%/65% of its box) */
-.pen__hit { left: 12.9%; top: 48.3%; width: 73%; height: 9%; rotate: 18.7deg; cursor: grab; }
-/* placed: the nib rests just after the words, the pen tilted up */
-.scene--belongings:has(#pen-on:checked) .pen { transform: translate(96.7%, 21.6%) rotate(-70deg); }
+.pen__hit { left: 12.9%; top: 48.3%; width: 73%; height: 9%; rotate: 18.7deg; cursor: grab; touch-action: none; }
+.pen.is-dragging .pen__hit { cursor: grabbing; }
 
 /* ---------- 07  SCENE 06 — GUITAR / GUN ----------
    Hover the guitar: it fades out and the gun fades in. */
