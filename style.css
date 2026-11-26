@@ -88,7 +88,8 @@ p { margin: 0; }
 
 /* ---------- 02  SCENES, STAGE, FRAME, LAYERS ----------
    .stage  = one screen (100vh), the picture is centred in it
-   .frame  = the Figma frame, scaled to fit the screen without cropping
+   .frame  = the Figma frame, always 100vw wide: every picture is a fixed
+             fraction of the window width (e.g. 20% of the frame = 20vw)
    .art    = the pictures, layered
    .layer  = one picture, placed with Figma numbers:
              --x (left) --y (top) --w (width), in % of the frame        */
@@ -104,7 +105,7 @@ p { margin: 0; }
 
 .frame {
   position: relative;
-  width: min(100vw, calc(100svh * var(--ratio)));
+  width: 100vw;   /* always the same fraction of the window width */
   container-type: inline-size;          /* text sizes follow the frame */
 }
 
@@ -222,7 +223,7 @@ body { timeline-scope: --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g9; }
    LEFT and RIGHT edges of the window. The text sits under the photo,
    centred, at its Figma position.                                     */
 .scene--zoom .frame {
-  --fitw: min(100vw, calc(100svh * var(--ratio)));   /* photo width  */
+  --fitw: 100vw;                                       /* photo width  */
   --fith: calc(var(--fitw) / (var(--ratio)));         /* photo height */
   width: 100vw;
   height: 100svh;
@@ -262,7 +263,7 @@ body { timeline-scope: --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g9; }
    blood), the text sticks to the RIGHT edge and is right-aligned.
    Both follow the window size.                                        */
 .scene--left .frame {
-  --artw: min(100vw, calc(100svh * var(--ratio)));   /* picture width */
+  --artw: 100vw;                                       /* picture width */
   width: 100vw;
   height: 100svh;
 }
@@ -568,10 +569,9 @@ body { timeline-scope: --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g9; }
 .scene--belongings .stage { height: auto; overflow: hidden; }
 .scene--belongings .frame { width: 100vw; }
 /* pictures and their boxes ignore the mouse; only the click / hover
-   areas (…__hit) and the stones react */
+   areas (…__hit) and the stone boxes react */
 .scene--belongings .art img,
-.scene--belongings .layer,
-.scene--belongings .rock { pointer-events: none; }
+.scene--belongings .layer { pointer-events: none; }
 .photo__hit, .letter__hit, .tin__hit, .necklace__hit, .pen__hit { pointer-events: auto; }
 
 .state {
@@ -593,17 +593,21 @@ body { timeline-scope: --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g9; }
   transition: rotate .6s var(--ease-physical);
 }
 .photo > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.photo__hit { left: 24%; top: 5%; width: 52%; height: 90%; }
-.photo:has(.photo__hit:hover) { rotate: calc(var(--rot) - 4deg); }
+/* hover area sits at scene level (above the stone boxes) */
+.photo__hit { left: 12.27%; top: 41.59%; width: 31.69%; height: 46.18%; }
+.art:has(.photo__hit:hover) .photo { rotate: calc(var(--rot) - 4deg); }
 
-/* --- LETTERS: 1 is shown first. Dropping the pen on the letter writes
-   "i'm here" (2) — interactions.js adds .is-written. After that, touching
-   the letter smudges it for good (3) — .is-smudged.                   */
+/* --- LETTERS: 1 is shown first. Putting the pen on the letter writes
+   "i'm here" (2). After that, touching the letter smudges it (3) — and it
+   stays smudged: a 1 ms paused animation is allowed to run on hover, and
+   its end state is kept.                                              */
 .letter { z-index: 2; transition: opacity .6s ease; }
 .letter--2, .letter--3 { opacity: 0; }
 .letter__hit { left: 49%; top: 55%; width: 41%; height: 30%; z-index: 9; }
-.scene--belongings.is-written .letter--2 { opacity: 1; transition-duration: 1.4s; }
-.scene--belongings.is-smudged .letter--3 { opacity: 1; transition-duration: .35s; }
+.scene--belongings:has(#pen-on:checked) .letter--2 { opacity: 1; transition-duration: 1.4s; }
+@keyframes appear-now-smudge { from { opacity: 0; } to { opacity: 1; } }
+.letter--3 { animation: appear-now-smudge .35s forwards paused; }
+.scene--belongings:has(#pen-on:checked):has(.letter__hit:hover) .letter--3 { animation-play-state: running; }
 
 /* --- TIN */
 .tin-body { z-index: 3; }
@@ -626,12 +630,12 @@ body { timeline-scope: --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g9; }
 /* open: lid where it lies in Figma */
 .scene--belongings:has(#tin-open:checked) .tin-lid { transform: none; }
 
-/* click = open / close, hold = shake (interactions.js) */
+/* click = open / close; hold the mouse down on the closed box = shake */
 .tin__hit { left: 47%; top: 29%; width: 29%; height: 22%; cursor: pointer; }
 .scene--belongings:has(#tin-open:checked) .tin__hit { left: 60%; top: 26%; width: 22%; height: 12%; }
 
-/* SHAKE while the mouse is held on the closed box (.is-shaking).
-   With a stone inside it rattles (.has-stones); empty it only sways.  */
+/* SHAKE while the mouse button is held down on the closed box (:active).
+   (Releasing the mouse counts as a click, so the box then opens.)      */
 @keyframes rattle {
   0%, 100% { translate: 0 0;   rotate: 0deg; }
   10% { translate: -3px 1px;  rotate: -1.2deg; }
@@ -648,24 +652,34 @@ body { timeline-scope: --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g9; }
   0%, 100% { rotate: 0deg; }
   50%      { rotate: 1.5deg; }
 }
-.scene--belongings.is-shaking.has-stones :is(.tin-body, .tin-lid) { animation: rattle .4s linear infinite; }
-.scene--belongings.is-shaking:not(.has-stones) :is(.tin-body, .tin-lid) { animation: sway 1.1s ease-in-out infinite; }
+.scene--belongings:not(:has(#tin-open:checked)):has(.tin__hit:active) :is(.tin-body, .tin-lid) { animation: rattle .4s linear infinite; }
 
-/* --- STONES: drag them anywhere. Dropped inside the box they stay under
-   the lid (.in-box); elsewhere they lie on top of everything.         */
-.rock {
+/* --- STONES: drag them anywhere (CSS only).
+   Each stone is an empty box that starts in the top-left corner of the
+   scene and can be resized (resize: both). Its resize handle — the
+   bottom-right corner — is drawn as the stone image, so dragging the
+   stone resizes the box, which moves the stone.
+   The box sits under the lid, so a stone in the box disappears when the
+   lid is closed, and the closed box's click area keeps it from being
+   picked up.                                                          */
+.rock-drag {
   position: absolute;
-  left: var(--in-x); top: var(--in-y); width: var(--w);
-  z-index: 12;
+  left: 0; top: 0;
+  width: var(--cw); height: var(--ch);
+  min-width: var(--sw); min-height: var(--sh);
+  max-width: 100%; max-height: 100%;
+  resize: both;
+  overflow: scroll;
+  z-index: 4;
   pointer-events: auto !important;
-  cursor: grab;
-  touch-action: none;
 }
-.rock.in-box { z-index: 4; }                 /* under the lid */
-.rock.is-dragging { z-index: 40; cursor: grabbing; }
-.rock > img { width: 100%; height: auto; }
-/* stones inside a closed box can't be reached */
-.scene--belongings:not(:has(#tin-open:checked)) .rock.in-box { pointer-events: none !important; }
+.rock-drag::-webkit-scrollbar        { width: var(--sw); height: var(--sh); background: transparent; }
+.rock-drag::-webkit-scrollbar-track,
+.rock-drag::-webkit-scrollbar-thumb,
+.rock-drag::-webkit-scrollbar-corner { background: transparent; }
+.rock-drag::-webkit-resizer          { background: center / contain no-repeat; }
+.rock-drag--1::-webkit-resizer { background-image: url("assets/rock-1-crop.png"); }
+.rock-drag--2::-webkit-resizer { background-image: url("assets/rock-2-crop.png"); }
 
 /* --- NECKLACE: closed first; click the locket to open, again to close */
 .necklace { z-index: 10; transition: opacity .35s ease; }
@@ -674,13 +688,18 @@ body { timeline-scope: --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g9; }
 .scene--belongings:has(#necklace-open:checked) .necklace--closed { opacity: 0; }
 .necklace__hit { left: 41%; top: 47%; width: 12%; height: 12%; cursor: pointer; }
 
-/* --- PEN: drag it anywhere; drop the nib on the letter to write */
-.pen { z-index: 11; }
-.pen.is-dragging { z-index: 40; }
+/* --- PEN: click it and it is put on the letter, nib just after the words.
+   (Once placed it stays: the input is a radio button.)                */
+.pen {
+  z-index: 11;
+  transform-origin: 15% 40.4%;        /* the nib */
+  transition: transform 1.2s var(--ease-physical);
+}
+.scene--belongings:has(#pen-on:checked) .pen { transform: translate(96.7%, 21.6%) rotate(-70deg); }
+.scene--belongings:has(#pen-on:checked) .pen__hit { pointer-events: none; }
 .pen > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 /* a thin strip along the pen (nib 15%/40%, end 84%/65% of its box) */
-.pen__hit { left: 12.9%; top: 48.3%; width: 73%; height: 9%; rotate: 18.7deg; cursor: grab; touch-action: none; }
-.pen.is-dragging .pen__hit { cursor: grabbing; }
+.pen__hit { left: 12.9%; top: 48.3%; width: 73%; height: 9%; rotate: 18.7deg; cursor: pointer; }
 
 /* ---------- 07  SCENE 06 — GUITAR / GUN ----------
    Hover the guitar: it fades out and the gun fades in. */
