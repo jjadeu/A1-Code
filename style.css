@@ -219,6 +219,35 @@ body { timeline-scope: --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g9; }
 }
 
 
+/* ---------- TYPEWRITER SCENE (zoomed in) ----------
+   The scene is enlarged so the typewriter fills most of the width; the
+   bottom of the machine runs off the screen and the cut is hidden by a
+   soft blur that grows towards the bottom edge.
+   --tw-zoom : width of the scene picture (1.45 = 145% of the window)
+   --tw-paper: where the top of the paper sits (from the top of the screen) */
+.scene--typewriter { --tw-zoom: 1.3; --tw-paper: 28svh; }
+.scene--typewriter .stage { position: relative; display: block; }
+.scene--typewriter .frame {
+  position: absolute;
+  left: 50%;
+  translate: -50% 0;
+  width: calc(100vw * var(--tw-zoom));
+  /* paper top = 23.34% of the picture height; picture height = width / 1.1736 */
+  top: calc(var(--tw-paper) - 0.2334 * 100vw * var(--tw-zoom) / 1.1736);
+}
+.scene--typewriter .stage::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 24%;
+  z-index: 6;
+  pointer-events: none;
+  backdrop-filter: blur(14px);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 75%);
+          mask-image: linear-gradient(to bottom, transparent 0%, #000 75%);
+  background: linear-gradient(to bottom, transparent 0%, rgb(35 37 31 / .55) 100%);
+}
+
 /* ---------- AERODROME SCENE ----------
    The photo always fits inside the window (centred, never cropped).
    The two splashes are the same scale as the photo, but stick to the
@@ -704,7 +733,16 @@ body { timeline-scope: --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g9; }
 }
 .scene--belongings:has(#pen-on:checked) .pen { transform: translate(96.7%, 21.6%) rotate(-70deg); }
 .scene--belongings:has(#pen-on:checked) .pen__hit { pointer-events: none; }
-.pen > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+/* the pen image the way Figma shows it inside its box: scaled to 87% and
+   turned 25.9deg around the nib, so the nib sits at 15% / 40.4% of the box
+   and the cap end at 84% / 65%                                          */
+.pen > img {
+  position: absolute;
+  left: 11.08%; top: -5.67%;
+  width: 86.96%; height: auto;
+  transform-origin: 4.5% 58.6%;       /* the nib in the image file */
+  rotate: 25.9deg;
+}
 /* a thin strip along the pen (nib 15%/40%, end 84%/65% of its box) */
 .pen__hit { left: 12.9%; top: 48.3%; width: 73%; height: 9%; rotate: 18.7deg; cursor: pointer; }
 
