@@ -561,57 +561,145 @@ body { timeline-scope: --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g9; }
 .machine:has(.typewriter-hit:hover) .typewriter { filter: brightness(1.12); }
 
 
-/* ---------- 06  SCENE 05 — PHOTOGRAPH + TIN BOX ---------- */
+/* ---------- 06  SCENE 05 — THE SOLDIER'S BELONGINGS ----------
+   Free scrolling scene (not pinned), full window width.
+   States are hidden inputs at the top of the section:
+     #necklace-open, #tin-open, #rock1-in/a/b, #rock2-in/a/b, #pen-on   */
+.scene--belongings .stage { height: auto; overflow: hidden; }
+.scene--belongings .frame { width: 100vw; }
+/* pictures and their boxes ignore the mouse; only the click / hover
+   areas (…__hit, .rock__go) react */
+.scene--belongings .art img,
+.scene--belongings .layer,
+.scene--belongings .rock { pointer-events: none; }
+.photo__hit, .letter__hit, .tin__hit, .necklace__hit, .pen__hit, .rock__go { pointer-events: auto; }
 
-/* hover: the photograph tilts as if picked up and turned to the light */
-.photo {
-  z-index: 4;
-  transform-origin: 50% 55%;
-  transition: transform 1.6s var(--ease-physical), filter 1.6s var(--ease-physical);
-  outline: none;
-}
-.photo:hover,
-.photo:focus-visible {
-  transform: perspective(1100px) rotateY(-10deg) rotateX(4deg) rotateZ(-1.5deg);
-  filter: brightness(1.08) drop-shadow(14px 18px 18px rgb(0 0 0 / .45));
+.state {
+  position: fixed; top: 50%; left: 0;
+  width: 1px; height: 1px;
+  opacity: 0; pointer-events: none;
 }
 
-.tin { z-index: 2; }
-.tin__lid {
-  transform-origin: 50% 36%;            /* the top edge of the lid */
-  transition: transform 2.2s var(--ease-physical), filter 2.2s;
-  z-index: 3;
-}
-/* the area inside the tin, where keepsakes are placed */
-.tin__contents {
+/* the clickable / hover areas sit above the pictures */
+.photo__hit, .letter__hit, .tin__hit, .necklace__hit, .pen__hit, .rock__go {
   position: absolute;
-  left: 33.5%; top: 38%; width: 33%; height: 24%;
-  opacity: 0;
-  transition: opacity 2.4s ease 0.9s;
-  z-index: 2;
+  z-index: 20;
 }
-.keepsake {
-  position: absolute;
-  left: var(--x, 10%);
-  top: var(--y, 10%);
-  width: var(--w, 40%);
-  transform: rotate(var(--r, 0deg));
-  filter: grayscale(.4) brightness(.9);
-}
-.tin__hit {
-  position: absolute;
-  left: 31.8%; top: 35.8%; width: 36.4%; height: 28.4%;
-  z-index: 4;
-  cursor: pointer;
-}
-/* open: the lid is lifted and slid off; the contents come out of the dark */
-#tin-open:checked ~ .stage .tin__lid {
-  transform: translate(-6%, -27%) rotate(-14deg);
-  filter: drop-shadow(10px 16px 14px rgb(0 0 0 / .5));
-}
-#tin-open:checked ~ .stage .tin__contents { opacity: 1; }
-#tin-open:checked ~ .stage .tin__hit { top: 8%; height: 56%; }  /* click lid again to close */
 
+/* --- PHOTO: hover = it rocks left and right, like turning it in your hand */
+.photo { z-index: 1; transform-origin: 50% 40%; }
+.photo > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.photo__hit { left: 24%; top: 5%; width: 52%; height: 90%; cursor: grab; }
+@keyframes rock-photo {
+  0%, 100% { rotate: var(--rot); }
+  25%      { rotate: calc(var(--rot) - 5deg); }
+  75%      { rotate: calc(var(--rot) + 4deg); }
+}
+.photo:has(.photo__hit:hover) { animation: rock-photo 1.6s ease-in-out infinite; }
+
+/* --- LETTERS: 1 is shown first. The pen makes "i'm here" appear (2);
+   touching the letter afterwards smudges it (3).                      */
+.letter { z-index: 2; transition: opacity .6s ease; }
+.letter--2, .letter--3 { opacity: 0; }
+.letter__hit { left: 49%; top: 55%; width: 41%; height: 30%; z-index: 9; }
+.scene--belongings:has(#pen-on:checked) .letter--2 { opacity: 1; transition-duration: 1.4s; }
+.scene--belongings:has(#pen-on:checked):has(.letter__hit:hover) .letter--3 { opacity: 1; transition-duration: .35s; }
+
+/* --- TIN */
+.tin-body { z-index: 3; }
+.tin-body > img {
+  position: absolute; left: 7.85%; top: 10.72%;
+  width: 84.31%; height: 78.56%;            /* image inside its Figma box */
+  rotate: 15.09deg;
+}
+.tin-lid  {
+  z-index: 5;
+  /* closed: lid sits on the body */
+  transform: translate(-11.37%, 9.14%) rotate(15.37deg);
+  transition: transform 1.4s var(--ease-physical);
+}
+.tin-lid > img {
+  position: absolute; left: .2%; top: .28%;
+  width: 99.59%; height: 99.43%;
+  rotate: -.28deg;
+}
+/* open: lid where it lies in Figma */
+.scene--belongings:has(#tin-open:checked) .tin-lid { transform: none; }
+
+/* click area: on the closed box / on the lid when open */
+.tin__hit { left: 47%; top: 29%; width: 29%; height: 22%; cursor: pointer; }
+.scene--belongings:has(#tin-open:checked) .tin__hit { left: 60%; top: 26%; width: 22%; height: 15%; }
+
+/* SHAKE: hover the closed box to shake it.
+   With a stone inside it rattles; empty, it only sways.
+   (A sound can't be triggered with HTML/CSS only.)                    */
+@keyframes rattle {
+  0%, 100% { translate: 0 0;   rotate: 0deg; }
+  10% { translate: -3px 1px;  rotate: -1.2deg; }
+  20% { translate: 3px -1px;  rotate: 1deg; }
+  30% { translate: -2px 0;    rotate: -.8deg; }
+  40% { translate: 3px 1px;   rotate: 1.3deg; }
+  50% { translate: -3px -1px; rotate: -1deg; }
+  60% { translate: 2px 0;     rotate: .7deg; }
+  70% { translate: -2px 1px;  rotate: -1.1deg; }
+  80% { translate: 3px 0;     rotate: .9deg; }
+  90% { translate: -1px -1px; rotate: -.5deg; }
+}
+@keyframes sway {
+  0%, 100% { rotate: 0deg; }
+  50%      { rotate: 1.5deg; }
+}
+.scene--belongings:not(:has(#tin-open:checked)):has(.tin__hit:hover):has(#rock1-in:checked, #rock2-in:checked) :is(.tin-body, .tin-lid) {
+  animation: rattle .45s linear infinite;
+}
+.scene--belongings:not(:has(#tin-open:checked)):has(.tin__hit:hover):not(:has(#rock1-in:checked, #rock2-in:checked)) :is(.tin-body, .tin-lid) {
+  animation: sway 1.2s ease-in-out infinite;
+}
+
+/* --- STONES: inside the box they sit where Figma puts them. With the box
+   open, click a stone to take it out; click again to move it to another
+   spot; a third click puts it back in the box.                        */
+.rock {
+  position: absolute;
+  left: var(--in-x); top: var(--in-y); width: var(--w);
+  z-index: 4;                       /* under the lid while inside */
+  transition: left .9s var(--ease-physical), top .9s var(--ease-physical);
+}
+.rock > img { width: 100%; height: auto; }
+.rock__go { inset: 0; display: none; cursor: grab; }
+
+#rock1-a:checked ~ .stage .rock--1, #rock2-a:checked ~ .stage .rock--2 { left: var(--a-x); top: var(--a-y); z-index: 12; }
+#rock1-b:checked ~ .stage .rock--1, #rock2-b:checked ~ .stage .rock--2 { left: var(--b-x); top: var(--b-y); z-index: 12; }
+
+/* which click target each stone shows */
+#tin-open:checked ~ #rock1-in:checked ~ .stage .rock--1 .go--in,
+#tin-open:checked ~ #rock2-in:checked ~ .stage .rock--2 .go--in,
+#rock1-a:checked ~ .stage .rock--1 .go--a, #rock2-a:checked ~ .stage .rock--2 .go--a,
+#rock1-b:checked ~ .stage .rock--1 .go--b, #rock2-b:checked ~ .stage .rock--2 .go--b { display: block; }
+/* a stone outside can only go back in while the box is open */
+#rock1-b:checked ~ .stage .rock--1 .go--b,
+#rock2-b:checked ~ .stage .rock--2 .go--b { display: none; }
+.scene--belongings:has(#tin-open:checked) #rock1-b:checked ~ .stage .rock--1 .go--b,
+.scene--belongings:has(#tin-open:checked) #rock2-b:checked ~ .stage .rock--2 .go--b { display: block; }
+
+/* --- NECKLACE: closed first; click the locket to open, again to close */
+.necklace { z-index: 10; transition: opacity .35s ease; }
+.necklace--open { opacity: 0; }
+.scene--belongings:has(#necklace-open:checked) .necklace--open   { opacity: 1; }
+.scene--belongings:has(#necklace-open:checked) .necklace--closed { opacity: 0; }
+.necklace__hit { left: 41%; top: 47%; width: 12%; height: 12%; cursor: pointer; }
+
+/* --- PEN: click it and it is put on the letter, nib on the empty line */
+.pen {
+  z-index: 11;
+  transform-origin: 15% 40.4%;        /* the nib */
+  transition: transform 1.2s var(--ease-physical);
+}
+.pen > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+/* a thin strip along the pen (nib 15%/40%, end 84%/65% of its box) */
+.pen__hit { left: 12.9%; top: 48.3%; width: 73%; height: 9%; rotate: 18.7deg; cursor: grab; }
+/* placed: the nib rests just after the words, the pen tilted up */
+.scene--belongings:has(#pen-on:checked) .pen { transform: translate(96.7%, 21.6%) rotate(-70deg); }
 
 /* ---------- 07  SCENE 06 — GUITAR / GUN ----------
    Hover the guitar: it fades out and the gun fades in. */
