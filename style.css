@@ -718,14 +718,14 @@ body { timeline-scope: --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g9; }
 .scene--belongings:has(#necklace-open:checked) .necklace--closed { opacity: 0; }
 .necklace__hit { left: 41%; top: 47%; width: 12%; height: 12%; cursor: pointer; }
 
-/* --- PEN: click it and it is put on the letter, nib just after the words.
-   (Once placed it stays: the input is a radio button.)                */
+/* --- PEN: click it to write "i'm here" on the note. The pen does not move.
+   (The input is a radio button, so the writing stays.)                 */
 .pen {
   z-index: 11;
   transform-origin: 15% 40.4%;        /* the nib */
   transition: transform 1.2s var(--ease-physical);
 }
-.scene--belongings:has(#pen-on:checked) .pen { transform: translate(96.7%, 21.6%) rotate(-70deg); }
+/* the pen stays where it is; clicking it only writes on the note */
 .scene--belongings:has(#pen-on:checked) .pen__hit { pointer-events: none; }
 /* the pen image the way Figma shows it inside its box: scaled to 87% and
    turned 25.9deg around the nib, so the nib sits at 15% / 40.4% of the box
