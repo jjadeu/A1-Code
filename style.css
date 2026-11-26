@@ -49,7 +49,7 @@
   --blood-deep: #9f1d12;   /* darker red it bleeds into on hover */
 
   --font: "Courier Prime", "Courier New", monospace;
-  --text-size: 1.667vw;    /* = 24px on a 1440px-wide window, like Figma */
+  --text-size: 16px;       /* every poem line (not the typewriter paper) */
   --paper-size: 1.111cqw;  /* = 16px on the 1440px Figma frame */
 
   --ease-physical: cubic-bezier(.45, .05, .25, 1);
@@ -136,21 +136,8 @@ p { margin: 0; }
   object-fit: cover;
 }
 
-/* Figma "soft light" blend. .bg-match is the same fixed page background,
-   placed inside the picture so the blend mixes with it (seamlessly). */
+/* Figma "soft light" blend (add class="soft-light" to an image). */
 .soft-light { mix-blend-mode: soft-light; }
-.bg-match {
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  /* includes scene 3's light (same as .glow nr 3) so there is no seam */
-  background:
-    radial-gradient(50vw 42vh at 50% 40%,
-      rgb(196 208 178 / calc(.24 * var(--glow-strength))) 0%,
-      rgb(196 208 178 / calc(.24 * var(--glow-strength) * .5)) 40%,
-      transparent 75%) fixed,
-    var(--olive-dark) url("assets/background.jpg") center / cover no-repeat fixed;
-}
 
 /* A text box, placed like the Figma text box (--tx, --ty). */
 .verse {
@@ -229,28 +216,40 @@ body { timeline-scope: --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g9; }
 }
 
 
-/* ---------- ZOOMED SCENE (aerodrome) ----------
-   The picture is enlarged until its left and right edges touch the
-   edges of the window (top/bottom may be cropped). The text keeps the
-   position and size it had before the zoom.                          */
+/* ---------- AERODROME SCENE ----------
+   The photo always fits inside the window (centred, never cropped).
+   The two splashes are the same scale as the photo, but stick to the
+   LEFT and RIGHT edges of the window. The text sits under the photo,
+   centred, at its Figma position.                                     */
 .scene--zoom .frame {
-  --fitw: min(100vw, calc(100svh * var(--ratio)));   /* size before zoom */
-  --fith: calc(var(--fitw) / (var(--ratio)));
+  --fitw: min(100vw, calc(100svh * var(--ratio)));   /* photo width  */
+  --fith: calc(var(--fitw) / (var(--ratio)));         /* photo height */
   width: 100vw;
   height: 100svh;
 }
 .scene--zoom .art {
   position: absolute;
-  left: 0;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  width: var(--fitw);
+}
+.edge-splash {
+  position: absolute;
   top: 50%;
   translate: 0 -50%;
-  width: 100vw;
+  width: calc(var(--fitw) * 1442 / 1430);   /* Figma: splash 1442, photo 1430 */
+  height: auto;
+  z-index: 2;
+  pointer-events: none;
 }
+.edge-splash--left  { left: 0; }
+.edge-splash--right { right: 0; }
 .scene--zoom .verse {
   left: 50%;
   translate: -50% 0;
   width: calc(var(--fitw) * 0.325);
-  top: calc(50% - var(--fith) / 2 + var(--fith) * 0.8049);
+  top: calc(50% - var(--fith) / 2 + var(--fith) * 0.782);
 }
 
 
@@ -324,19 +323,25 @@ body { timeline-scope: --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g9; }
 }
 @keyframes type { to { width: calc(var(--chars) * 1ch + 0.1ch); } }
 
+/* Poem lines keep their full width; the letters are uncovered left to
+   right with clip-path (one step = one letter). Once a line is fully
+   typed the clip opens up around it, so the hover glitch (blurred
+   copies drifting apart) is not cut off.                              */
 .verse .type-line {
-  animation: type linear both;
+  width: calc(var(--chars) * 1ch + 0.1ch);
+  overflow: visible;
+  animation: type-clip linear both;
   animation-timing-function: steps(var(--chars), end);
   animation-timeline: --scene;
   animation-range: contain var(--from, 5%) contain var(--to, 45%);
 }
-
-/* Centred text box (scene 03). The line keeps its full width so it
-   stays centred; the letters are uncovered left to right instead.   */
 @keyframes type-clip {
-  from { clip-path: inset(0 100% 0 0); }
-  to   { clip-path: inset(0 0 0 0); }
+  0%    { clip-path: inset(-0.6em 100% -0.6em -0.6em); }
+  99.9% { clip-path: inset(-0.6em 0 -0.6em -0.6em); }
+  100%  { clip-path: inset(-0.6em -0.6em -0.6em -0.6em); }
 }
+
+/* Centred text box (scene 03). */
 .verse--center { width: var(--bw); text-align: center; }
 .verse--center .type-line {
   width: calc(var(--chars) * 1ch + 0.1ch);
@@ -345,15 +350,82 @@ body { timeline-scope: --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g9; }
 }
 
 
-/* ---------- 04  INK BLUR ON HOVER ----------
-   Only a blur — like a drop of water soaking into the ink.            */
+/* ---------- 04  TYPEWRITER INK + TEAR GLITCH ON HOVER ----------
+   Texture: a grain mask (assets/ink-grain.png) makes the ink uneven —
+   faint dry patches and paper speckles — and a slight second strike
+   thickens the letters, like a worn typewriter ribbon.
+
+   Hover: the text blurs at once, then breaks up in patches: blurred
+   copies drift apart (text-shadow) and the dry patches jump around
+   (mask-position), in uneven steps — like seeing through tears.       */
 .ink {
   display: inline-block;
-  transition: filter 1.6s var(--ease-physical);
+  padding: 0.4em;          /* room for the glitch inside the mask ...   */
+  margin: -0.4em;          /* ... without moving the text               */
+  -webkit-mask-image: url("assets/ink-grain.png");
+          mask-image: url("assets/ink-grain.png");
+  -webkit-mask-size: 7em 7em;
+          mask-size: 7em 7em;
+  text-shadow:
+    0.03em 0.01em 0 color-mix(in srgb, currentColor 40%, transparent),
+    0 0 0.04em color-mix(in srgb, currentColor 60%, transparent);
+}
+
+@keyframes tear {
+  0% {
+    filter: blur(1px);
+    -webkit-mask-position: 0 0; mask-position: 0 0;
+    text-shadow: -0.08em 0 0.06em color-mix(in srgb, currentColor 55%, transparent),
+                  0.12em 0.02em 0.1em color-mix(in srgb, currentColor 35%, transparent);
+  }
+  14% {
+    filter: blur(2.2px);
+    -webkit-mask-position: 1.1em -0.6em; mask-position: 1.1em -0.6em;
+    text-shadow:  0.16em -0.04em 0.12em color-mix(in srgb, currentColor 50%, transparent),
+                 -0.24em 0.06em 0.18em color-mix(in srgb, currentColor 30%, transparent),
+                  0 0.14em 0.1em color-mix(in srgb, currentColor 25%, transparent);
+  }
+  29% {
+    filter: blur(1.4px);
+    -webkit-mask-position: -1.6em 0.9em; mask-position: -1.6em 0.9em;
+    text-shadow: -0.3em 0.03em 0.16em color-mix(in srgb, currentColor 45%, transparent),
+                  0.08em -0.1em 0.08em color-mix(in srgb, currentColor 40%, transparent);
+  }
+  43% {
+    filter: blur(2.8px);
+    -webkit-mask-position: 2.3em 0.3em; mask-position: 2.3em 0.3em;
+    text-shadow:  0.22em 0.08em 0.2em color-mix(in srgb, currentColor 40%, transparent),
+                 -0.12em -0.06em 0.12em color-mix(in srgb, currentColor 45%, transparent),
+                  0.36em 0 0.24em color-mix(in srgb, currentColor 20%, transparent);
+  }
+  57% {
+    filter: blur(1.8px);
+    -webkit-mask-position: -0.7em -1.4em; mask-position: -0.7em -1.4em;
+    text-shadow: -0.18em 0.1em 0.14em color-mix(in srgb, currentColor 50%, transparent),
+                  0.1em 0 0.06em color-mix(in srgb, currentColor 35%, transparent);
+  }
+  71% {
+    filter: blur(2.4px);
+    -webkit-mask-position: 1.8em 1.2em; mask-position: 1.8em 1.2em;
+    text-shadow:  0.3em -0.04em 0.2em color-mix(in srgb, currentColor 35%, transparent),
+                 -0.2em 0.04em 0.16em color-mix(in srgb, currentColor 40%, transparent),
+                  0 -0.12em 0.1em color-mix(in srgb, currentColor 25%, transparent);
+  }
+  86% {
+    filter: blur(1.6px);
+    -webkit-mask-position: -2.4em 0.4em; mask-position: -2.4em 0.4em;
+    text-shadow: -0.1em -0.08em 0.1em color-mix(in srgb, currentColor 50%, transparent),
+                  0.18em 0.08em 0.14em color-mix(in srgb, currentColor 30%, transparent);
+  }
+  100% {
+    filter: blur(1px);
+    -webkit-mask-position: 0 0; mask-position: 0 0;
+    text-shadow: -0.08em 0 0.06em color-mix(in srgb, currentColor 55%, transparent),
+                  0.12em 0.02em 0.1em color-mix(in srgb, currentColor 35%, transparent);
+  }
 }
 .ink:hover {
-  filter: blur(1.4px);
-  transition-duration: 2.4s;
+  animation: tear 1.1s steps(1, end) infinite;
 }
 
 

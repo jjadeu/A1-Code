@@ -90,15 +90,15 @@
   <!-- ===================== SCENE 03 — AERODROME ===================== -->
   <section class="scene pinned scene--zoom" aria-label="Scene three" style="--scroll: 150vh">
     <div class="stage">
-      <div class="frame" style="--ratio: 1440 / 1220">
+      <!-- The photo always fits the window; the two splashes stick to the
+           left and right edges of the window. -->
+      <div class="frame" style="--ratio: 1430 / 1211">
         <div class="art">
-          <!-- the photo uses the soft-light blend from Figma; .bg-match puts
-               the page background behind it so it has something to blend with -->
-          <div class="layer bg-match"></div>
-          <img class="layer soft-light" src="assets/aerodrome-a1.png" alt="An empty aerodrome under a heavy sky" style="--x:0%; --y:0%; --w:100%; --ar:1440/1219">
-          <img class="layer" src="assets/aerodrome-splash.png" alt="" style="--x:0%; --y:0%; --w:100%">
+          <img class="layer" src="assets/aerodrome-photo.png" alt="An empty aerodrome under a heavy sky" style="--x:0%; --y:0%; --w:100%">
         </div>
-        <div class="verse verse--center" style="--tx:33.75%; --ty:80.49%; --bw:32.5%">
+        <img class="edge-splash edge-splash--left"  src="assets/aerodrome-splash-left.png"  alt="">
+        <img class="edge-splash edge-splash--right" src="assets/aerodrome-splash-right.png" alt="">
+        <div class="verse verse--center" style="--tx:33.75%; --ty:78.2%; --bw:32.5%">
           <span class="type-line" style="--chars: 25; --from: 6%;  --to: 42%"><span class="ink">Mourning in the aerodrome</span></span>
           <span class="type-line" style="--chars: 32; --from: 50%; --to: 90%"><span class="ink">The weather warmer, he is colder</span></span>
         </div>
