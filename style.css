@@ -200,12 +200,20 @@ body { timeline-scope: --g0, --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g
   /* from the middle out: bright light -> the plain background colour ->
      a dark ring that keeps going to the edges. The whole thing moves
      with each scene, so the darkness follows the light.                */
+  /* many small steps, so there is no visible ring anywhere:
+     light fades into the background, the background fades into dark */
   background: radial-gradient(var(--gs) at var(--gx) var(--gy),
               rgb(196 208 178 / calc(var(--ga) * var(--glow-strength))) 0%,
-              rgb(196 208 178 / calc(var(--ga) * var(--glow-strength) * .5)) 40%,
-              transparent 75%,
-              transparent 110%,
-              rgb(8 10 6 / var(--dark-strength)) 175%);
+              rgb(196 208 178 / calc(var(--ga) * var(--glow-strength) * .72)) 18%,
+              rgb(196 208 178 / calc(var(--ga) * var(--glow-strength) * .45)) 36%,
+              rgb(196 208 178 / calc(var(--ga) * var(--glow-strength) * .22)) 54%,
+              rgb(196 208 178 / calc(var(--ga) * var(--glow-strength) * .07)) 72%,
+              rgb(196 208 178 / 0) 88%,
+              rgb(8 10 6 / calc(var(--dark-strength) * .08)) 105%,
+              rgb(8 10 6 / calc(var(--dark-strength) * .25)) 125%,
+              rgb(8 10 6 / calc(var(--dark-strength) * .5)) 150%,
+              rgb(8 10 6 / calc(var(--dark-strength) * .78)) 180%,
+              rgb(8 10 6 / var(--dark-strength)) 215%);
   animation: glow linear both;
   animation-range: cover 0% cover 100%;
 }
@@ -247,7 +255,7 @@ body { timeline-scope: --g0, --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g
 }
 .intro-title {
   right: 6.81%;
-  top: 55.08%;
+  top: 52.62%;                         /* Figma 677px, moved up 30px */
   font-family: "Lexend Tera", var(--font);
   font-size: 4.444cqw;                 /* = 64px on the 1440px frame */
   line-height: 1.27;
@@ -255,14 +263,14 @@ body { timeline-scope: --g0, --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g
 }
 .intro-by {
   right: 7.15%;
-  top: 60.98%;
+  top: 58.52%;
   font-size: max(var(--text-size), 11px);
   line-height: 1.3;
 }
 
 /* ending: "ARMY DREAMERS" in Lexend Tera, large, still red with the ink
    texture and the hover effects */
-.scene--end .title {
+.verse--end .title {
   font-family: "Lexend Tera", var(--font);
   font-size: 4.444cqw;                 /* = 64px on the 1440px frame */
   line-height: 1.15;
@@ -281,7 +289,7 @@ body { timeline-scope: --g0, --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g
   margin-left: var(--ix, 0);
   width: fit-content;
 }
-.interlude--center .verse { margin-inline: auto; text-align: center; }
+.interlude--center .verse { margin-inline: auto; text-align: center; translate: 0 -0.69vw; }   /* politician pair: 10px higher */
 .interlude .verse .type-line { animation: none; width: auto; clip-path: none; }
 
 /* ---------- INTRO: forest from edge to edge, soldier + title follow it */
@@ -292,10 +300,8 @@ body { timeline-scope: --g0, --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g
    --art-scale enlarges a scene's picture (and its splash) around its
    anchor; the text keeps its place.                                    */
 .scene--coffin  { --art-scale: 1.2; }
-.scene--medals  { --art-scale: 1.2; }
 .scene--flowers { --art-scale: 1.25; }
-.scene--coffin .art,
-.scene--medals .art { scale: var(--art-scale); transform-origin: left center; }
+.scene--coffin .art { scale: var(--art-scale); transform-origin: left center; }
 .scene--flowers .art { scale: var(--art-scale); transform-origin: 50% 50%; }
 
 /* ---------- LETTER: hover = tilts a little to the left */
@@ -401,22 +407,6 @@ body { timeline-scope: --g0, --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g
   animation-name: type-clip;
 }
 
-/* Medals: the text is centred horizontally in the empty space to the
-   right of the medals (and each line is centred). */
-.scene--medals .verse {
-  left: calc(var(--artw) * var(--art-scale, 1));
-  right: 0;
-  max-width: none;
-  text-align: center;
-}
-.scene--medals .verse .type-line { margin-inline: auto; }
-
-/* ...and the two text boxes together are centred on the middle of the
-   screen. Group = box 1 (2 lines) + gap + box 2 (2 lines) = 7.3em;
-   the gap between the boxes is the one from Figma (4.7em).            */
-/* the pair (2 lines) + gap + the last lines (2 lines) = 7em, centred */
-.scene--medals .frame > .verse--pair { top: calc(50% - 3.5em); }
-.scene--medals .frame > .verse--last { top: calc(50% + 0.9em); }
 .verse.verse--static .type-line { animation: none; width: auto; clip-path: none; }
 
 
@@ -425,14 +415,10 @@ body { timeline-scope: --g0, --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g
    top while you scroll through the extra height (--scroll), and that
    scrolling types the lines. You cannot reach the next scene before
    every line is typed.                                                 */
-.pinned {
-  height: calc(100svh + var(--scroll, 150vh));
-  view-timeline-name: --scene;
-}
-.pinned .stage {
-  position: sticky;
-  top: 0;
-}
+/* No more scroll lock: every scene scrolls past freely and every line is
+   already there (the typing rules below are switched off). */
+.pinned { height: auto; }
+.pinned .stage { position: relative; }
 
 /* one line = one typed strip. One step of the animation = one letter */
 .type-line {
@@ -455,6 +441,10 @@ body { timeline-scope: --g0, --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g
   animation-timeline: --scene;
   animation-range: contain var(--from, 5%) contain var(--to, 45%);
 }
+/* lines are shown at once (no typing on scroll) */
+.verse .type-line,
+.verse--center .type-line,
+.scene--left .verse .type-line { animation: none; clip-path: none; }
 @keyframes type-clip {
   0%    { clip-path: inset(-0.6em 100% -0.6em -0.6em); }
   99.9% { clip-path: inset(-0.6em 0 -0.6em -0.6em); }
@@ -860,90 +850,36 @@ body { timeline-scope: --g0, --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g
 .morph:has(.morph__hit:focus-visible) .morph__gun { opacity: 1; }
 
 
-/* ---------- 08  SCENE 08 — MEDALS ----------
-   The medals stay clean while the lines type (0–68% of the scroll).
-   The moment the last letter is typed, the blood appears all at once.
+/* ---------- 08  SCENE 08 — MEDALS + ENDING ----------
+   One still page laid out like Figma; the frame is as wide as the window,
+   so the medals touch both edges (like the aerodrome photo) and nothing
+   is cut off.
 
-   CSS has no memory, so "stays forever" is built like this:
-   .latch-trigger — an invisible sticky element. Its negative `top`
-                    makes it stick exactly when 69% of the scene has been
-                    scrolled (the last letter typed).
-   .latch-view    — the blood, on a fixed layer over the medals. While the
-                    trigger is stuck, a 1 ms paused animation is allowed
-                    to run; once it has run, its end state (visible) is
-                    kept, even when you scroll back up.
-   The section's clip-path keeps that fixed layer inside this scene, and
-   .latch-art hides it while the scene slides in or out.
-   .contaminate   — the blood inside the scene itself, shown while the
-                    scene slides out at the end, so it leaves with it.  */
-.scene--medals { clip-path: inset(0); }
+   The blood: CSS has no memory, so "appears and stays" is built like this.
+   The frame is sticky with a negative `top` and the section is 2px taller
+   than it, so the frame counts as "stuck" from the moment the last line
+   reaches 70% of the screen height (and stays stuck below that point).
+   While stuck, a 1 ms paused animation is allowed to run; once it has
+   run, its end state (blood visible) is kept, even when you scroll back.
+   152.15vw = frame height (2191 / 1440), 61.84% = last line's Figma y.  */
+.scene--finale::after { content: ""; display: block; height: 2px; }   /* the 2px of room */
+.scene--finale .frame {
+  width: 100vw;
+  position: sticky;
+  top: calc(70svh - 0.6184 * 152.15vw);
+  container-type: inline-size scroll-state;
+}
 
 @keyframes appear-now { from { opacity: 0; } to { opacity: 1; } }
-
-.latch-trigger {
-  position: sticky;
-  top: calc(100vh - var(--scroll) * 0.69);
-  height: 1px;
-  container-type: scroll-state;
-}
-.latch-view {
-  position: fixed;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  pointer-events: none;
-  z-index: 6;
+.scene--finale .blood {
   opacity: 0;
   animation: appear-now 1ms forwards paused;
 }
 @container scroll-state(stuck: top) {
-  .latch-view { animation-play-state: running; }
+  .scene--finale .blood { animation-play-state: running; }
 }
-
-/* visible only while the scene is pinned on screen: the animation
-   applies (opacity 1) inside that range and not at all outside it */
-@keyframes pinned-only {
-  from { opacity: 1; }
-  to   { opacity: 1; }
-}
-.latch-art {
-  opacity: 0;
-  animation: pinned-only linear none;
-  animation-timeline: --scene;
-  animation-range: contain 0% contain 100%;
-}
-
-.contaminate {
-  opacity: 0;
-  animation: appear-now linear both;
-  animation-timing-function: steps(1, start);   /* no fade: on or off */
-  animation-timeline: --scene;
-  animation-range: exit 0% exit 100%;
-}
-
-/* The text must sit ABOVE the blood. While the scene is pinned, the text
-   shown is a copy on its own fixed layer (.latch-text) above the blood;
-   the original text inside the scene is shown only while it slides in
-   or out.                                                              */
-.latch-text {
-  position: fixed;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  z-index: 7;
-  pointer-events: none;
-  opacity: 0;
-  animation: pinned-only linear none;
-  animation-timeline: --scene;
-  animation-range: contain 0% contain 100%;
-}
-.latch-text .ink { pointer-events: auto; }   /* hover blur still works */
-
-@keyframes hide-while-pinned { from { opacity: 0; } to { opacity: 0; } }
-.scene--medals .stage .verse {
-  animation: hide-while-pinned linear none;
-  animation-timeline: --scene;
-  animation-range: contain 0% contain 100%;
+@supports not (container-type: scroll-state) {
+  .scene--finale .blood { opacity: 1; animation: none; }
 }
 
 
@@ -952,22 +888,24 @@ body { timeline-scope: --g0, --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g
    the last line is stained red. Hover: the line blurs and bleeds red. */
 .verse--end {
   left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  top: 86.4%;                     /* Figma y 10433 */
+  transform: translateX(-50%);
   text-align: center;
 }
-.scene--end .type-line {
+.verse--end .type-line {
   width: auto;
   animation: none;
 }
-.title { color: var(--blood); }   /* the whole last line is red */
+/* the title now sits on the blood, so it is light (as in the new
+   layout); on hover it still bleeds red */
+.title { color: var(--ink-white); }
 .title .bleed {
   transition:
     color 3.2s var(--ease-physical),
     filter 3.2s var(--ease-physical);
 }
 .title .bleed:hover {
-  color: var(--blood-deep);
+  color: var(--blood);
   filter: blur(1.8px);
   transition-duration: 3.6s;
 }
@@ -995,7 +933,6 @@ body { timeline-scope: --g0, --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g
   .pinned { height: auto; }
   .pinned .stage { position: relative; }
   .verse .type-line { animation: none; width: auto; }
-  .contaminate { animation: none; opacity: 0; }
   .verse--center .type-line { animation: none; }
   .glow { animation: none; }
   .glow:nth-child(1) { opacity: 1; }
