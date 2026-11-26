@@ -202,11 +202,6 @@ body { timeline-scope: --g0, --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g
               transparent 75%);
   animation: glow linear both;
   animation-range: cover 0% cover 100%;
-  /* grainy, patchy light (like the orange splashes) — same dark tone */
-  -webkit-mask-image: url("assets/glow-grain.png");
-          mask-image: url("assets/glow-grain.png");
-  -webkit-mask-size: 46vw 46vw;
-          mask-size: 46vw 46vw;
 }
 @keyframes glow {
   entry 0%   { opacity: 0; }
@@ -230,9 +225,15 @@ body { timeline-scope: --g0, --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g
   inset: 0;
   z-index: 40;
   pointer-events: none;
+  /* the dark parts are grainy and patchy (like the orange splashes);
+     the light in the middle stays clean */
   background:
-    radial-gradient(120% 95% at 50% 46%, transparent 52%, rgb(12 14 10 / .55) 100%),
-    linear-gradient(to bottom, rgb(12 14 10 / .35), transparent 18%, transparent 82%, rgb(12 14 10 / .45));
+    radial-gradient(115% 90% at 50% 46%, transparent 38%, rgb(10 12 8 / .78) 100%),
+    linear-gradient(to bottom, rgb(10 12 8 / .5), transparent 20%, transparent 80%, rgb(10 12 8 / .6));
+  -webkit-mask-image: url("assets/glow-grain.png");
+          mask-image: url("assets/glow-grain.png");
+  -webkit-mask-size: 38vw 38vw;
+          mask-size: 38vw 38vw;
 }
 
 
@@ -266,10 +267,43 @@ body { timeline-scope: --g0, --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g
 .scene--end .title {
   font-family: "Lexend Tera", var(--font);
   font-size: 4.444cqw;                 /* = 64px on the 1440px frame */
-  line-height: 1.3;
-  margin-top: .35em;
+  line-height: 1.15;
+  margin-top: -.12em;
   text-transform: uppercase;           /* capitals, as in Figma */
 }
+
+
+/* ---------- QUESTION LINES BETWEEN SCENES ----------
+   "(What could he do?) …" sit in the gaps between scenes, already there
+   (no typing). --ix = distance from the left edge (Figma x).            */
+.interlude { position: relative; z-index: 1; padding: 20vh 0; }
+.interlude .verse {
+  position: relative;
+  left: auto; top: auto;
+  margin-left: var(--ix, 0);
+  width: fit-content;
+}
+.interlude--center .verse { margin-inline: auto; text-align: center; }
+.interlude .verse .type-line { animation: none; width: auto; clip-path: none; }
+
+/* ---------- INTRO: forest from edge to edge, soldier + title follow it */
+.scene--intro .stage { height: auto; }
+.scene--intro .frame { width: 100vw; }
+
+/* ---------- BIGGER PICTURES ----------
+   --art-scale enlarges a scene's picture (and its splash) around its
+   anchor; the text keeps its place.                                    */
+.scene--coffin  { --art-scale: 1.2; }
+.scene--medals  { --art-scale: 1.2; }
+.scene--flowers { --art-scale: 1.25; }
+.scene--coffin .art,
+.scene--medals .art { scale: var(--art-scale); transform-origin: left center; }
+.scene--flowers .art { scale: var(--art-scale); transform-origin: 50% 50%; }
+
+/* ---------- LETTER: hover = tilts a little to the left */
+.letter { transform-origin: 70% 60%; transition: opacity .6s ease, rotate .6s var(--ease-physical); }
+.letter__card { position: absolute; left: 47%; top: 52%; width: 46%; height: 37%; z-index: 8; pointer-events: auto; }
+.art:has(.letter__card:hover, .letter__hit:hover) .letter { rotate: -3deg; }
 
 
 /* ---------- TYPEWRITER SCENE (zoomed in) ----------
@@ -369,7 +403,7 @@ body { timeline-scope: --g0, --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g
 /* Medals: the text is centred horizontally in the empty space to the
    right of the medals (and each line is centred). */
 .scene--medals .verse {
-  left: var(--artw);
+  left: calc(var(--artw) * var(--art-scale, 1));
   right: 0;
   max-width: none;
   text-align: center;
@@ -379,8 +413,7 @@ body { timeline-scope: --g0, --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g
 /* ...and the two text boxes together are centred on the middle of the
    screen. Group = box 1 (2 lines) + gap + box 2 (2 lines) = 7.3em;
    the gap between the boxes is the one from Figma (4.7em).            */
-.scene--medals .frame > .verse:nth-child(2) { top: calc(50% - 3.65em); }
-.scene--medals .frame > .verse:nth-child(3) { top: calc(50% + 1.05em); }
+.scene--medals .frame > .verse { top: calc(50% - 1.3em); }
 
 
 /* ---------- 03  PINNED SCENES + SCROLL TYPING ----------
