@@ -631,7 +631,8 @@ body { timeline-scope: --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g9; }
    its end state is kept.                                              */
 .letter { z-index: 2; transition: opacity .6s ease; }
 .letter--2, .letter--3 { opacity: 0; }
-.letter__hit { left: 49%; top: 55%; width: 41%; height: 30%; z-index: 9; }
+/* only the words "i'm here" (Figma: x 1016-1178, y 5542-5610) */
+.letter__hit { left: 69.5%; top: 75%; width: 13.5%; height: 7%; z-index: 9; }
 .scene--belongings:has(#pen-on:checked) .letter--2 { opacity: 1; transition-duration: 1.4s; }
 @keyframes appear-now-smudge { from { opacity: 0; } to { opacity: 1; } }
 .letter--3 { animation: appear-now-smudge .35s forwards paused; }
