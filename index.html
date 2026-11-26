@@ -287,8 +287,10 @@
 
 </main>
 
-<!-- Sound (assignment requirement). Put an mp3 at assets/sound.mp3. -->
-<audio class="sound" controls loop preload="none" src="assets/sound.mp3" aria-label="Sound"></audio>
+<!-- Sound: starts by itself when the page opens and loops.
+     (Chrome may hold back sound on a first visit until the visitor has
+     clicked on the site once; the play button is there for that case.) -->
+<audio class="sound" controls autoplay loop preload="auto" src="assets/sound.mp3" aria-label="Army Dreamers — Kate Bush"></audio>
 
 </body>
 </html>
