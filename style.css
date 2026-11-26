@@ -524,8 +524,8 @@ body { timeline-scope: --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g9; }
 /* the old sheet is pulled up and out of the machine */
 @keyframes lift {
   0%   { opacity: 1; transform: translateY(0.2%); }
-  25%  { opacity: 1; transform: translateY(-6%) rotate(-0.4deg); }
-  100% { opacity: 0; transform: translateY(-62%) rotate(-2.5deg); }
+  25%  { opacity: 1; transform: translateY(-6%); }
+  100% { opacity: 0; transform: translateY(-62%); }   /* straight up, no tilt */
 }
 
 /* the machine: a tremor for every key, a jolt at the carriage return.
