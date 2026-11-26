@@ -566,8 +566,11 @@ body { timeline-scope: --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g9; }
    Free scrolling scene (not pinned), full window width.
    States are hidden inputs at the top of the section:
      #necklace-open, #tin-open, #rock1-in/a/b, #rock2-in/a/b, #pen-on   */
+/* --b-scale: size of the whole scene as a fraction of the window width
+   (0.8 = 80vw). Every object inside, the stones included, follows it. */
+.scene--belongings { --b-scale: 0.8; }
 .scene--belongings .stage { height: auto; overflow: hidden; }
-.scene--belongings .frame { width: 100vw; }
+.scene--belongings .frame { width: calc(100vw * var(--b-scale)); }
 /* pictures and their boxes ignore the mouse; only the click / hover
    areas (…__hit) and the stone boxes react */
 .scene--belongings .art img,
@@ -665,15 +668,17 @@ body { timeline-scope: --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8, --g9; }
 .rock-drag {
   position: absolute;
   left: 0; top: 0;
-  width: var(--cw); height: var(--ch);
-  min-width: var(--sw); min-height: var(--sh);
+  width:  calc(var(--cw) * var(--b-scale));
+  height: calc(var(--ch) * var(--b-scale));
+  min-width:  calc(var(--sw) * var(--b-scale));
+  min-height: calc(var(--sh) * var(--b-scale));
   max-width: 100%; max-height: 100%;
   resize: both;
   overflow: scroll;
   z-index: 4;
   pointer-events: auto !important;
 }
-.rock-drag::-webkit-scrollbar        { width: var(--sw); height: var(--sh); background: transparent; }
+.rock-drag::-webkit-scrollbar        { width: calc(var(--sw) * var(--b-scale)); height: calc(var(--sh) * var(--b-scale)); background: transparent; }
 .rock-drag::-webkit-scrollbar-track,
 .rock-drag::-webkit-scrollbar-thumb,
 .rock-drag::-webkit-scrollbar-corner { background: transparent; }
